@@ -23,16 +23,16 @@ steps:
   - 'TF_VAR_billing_account=$_LR_BILLING_ACCOUNT'
 - id: create-dwh
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'cft test run TestAnalyticsLakehouse --stage init --verbose']
+  args: ['/bin/bash', '-c', 'cft test run TestSimpleExample --stage init --verbose']
 - id: apply-dwh
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'cft test run TestAnalyticsLakehouse --stage apply --verbose']
+  args: ['/bin/bash', '-c', 'cft test run TestSimpleExample --stage apply --verbose']
 - id: verify-dwh
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'cft test run TestAnalyticsLakehouse --stage verify --verbose']
+  args: ['/bin/bash', '-c', 'cft test run TestSimpleExample --stage verify --verbose']
 - id: destroy-dwh
   name: 'gcr.io/cloud-foundation-cicd/$_DOCKER_IMAGE_DEVELOPER_TOOLS:$_DOCKER_TAG_VERSION_DEVELOPER_TOOLS'
-  args: ['/bin/bash', '-c', 'cft test run TestAnalyticsLakehouse --stage destroy --verbose']
+  args: ['/bin/bash', '-c', 'cft test run TestSimpleExample --stage destroy --verbose']
 tags:
 - 'ci'
 - 'integration'
