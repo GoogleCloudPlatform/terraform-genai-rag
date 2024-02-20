@@ -4,3 +4,20 @@
 **/terraform.tfplan
 **/values-*.yaml
 credentials.json
+
+# Python
+*.pyc
+*.txt
+*.exe
+*.cfg
+*.sh
+
+# OSX leaves these everywhere on SMB shares
+._*
+
+# OSX trash
+.DS_Store
+
+# BIN
+.venv/bin/*
+.venv/lib/*
