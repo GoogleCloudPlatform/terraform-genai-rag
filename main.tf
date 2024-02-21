@@ -24,28 +24,59 @@ module "project-services" {
 
   activate_apis = [
     "artifactregistry.googleapis.com",
-    "biglake.googleapis.com",
-    "bigquery.googleapis.com",
-    "bigqueryconnection.googleapis.com",
-    "bigqueryconnection.googleapis.com",
-    "bigquerydatapolicy.googleapis.com",
-    "bigquerydatatransfer.googleapis.com",
-    "bigquerymigration.googleapis.com",
-    "bigqueryreservation.googleapis.com",
-    "bigquerystorage.googleapis.com",
     "cloudapis.googleapis.com",
     "cloudbuild.googleapis.com",
     "cloudfunctions.googleapis.com",
     "compute.googleapis.com",
     "config.googleapis.com",
-    "datacatalog.googleapis.com",
-    "datalineage.googleapis.com",
-    "dataplex.googleapis.com",
-    "dataproc.googleapis.com",
     "iam.googleapis.com",
+    "run.googleapis.com",
     "serviceusage.googleapis.com",
+    "sql.googleapis.com",
     "storage-api.googleapis.com",
     "storage.googleapis.com",
     "workflows.googleapis.com",
   ]
+
+  activate_api_identities = [
+    {
+      api = "workflows.googleapis.com"
+      roles = [
+        "roles/workflows.viewer"
+      ]
+    }
+  ]
+}
+
+resource "random_id" "id" {
+  byte_length = 4
+}
+
+# Set up the provisioning storage bucket
+resource "google_storage_bucket" "raw_bucket" {
+  name                        = "gcp-genai-rag-provisioning-${random_id.id.hex}"
+  project                     = module.project-services.project_id
+  location                    = var.region
+  uniform_bucket_level_access = true
+  force_destroy               = var.force_destroy
+
+  public_access_prevention = "enforced" # need to validate if this is a hard requirement
+}
+
+resource "google_storage_bucket_object" "airport" {
+  name   = "airport_dataset.csv"
+  source = "/data/airport_dataset.csv"
+  bucket = google_storage_bucket.raw_bucket.name
+}
+
+resource "google_storage_bucket_object" "amenity" {
+  name   = "amenity_dataset.csv"
+  source = "/data/amenity_dataset.csv"
+  bucket = google_storage_bucket.raw_bucket.name
+}
+
+resource "google_storage_bucket_object" "flights" {
+  name   = "flights_dataset.csv"
+  source = "/data/flights_dataset.csv"
+  bucket = google_storage_bucket.raw_bucket.name
 }
