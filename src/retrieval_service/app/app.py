@@ -44,7 +44,7 @@ def parse_config(path: str) -> AppConfig:
     config["datastore"]["kind"] = os.environ.get("DB_KIND", "postgres")
     config["datastore"]["host"] = os.environ.get("DB_HOST", "127.0.0.1")
     config["datastore"]["port"] = os.environ.get("DB_PORT", 5432)
-    config["datastore"]["database"] = os.environ.get("DB_NAME", "gen_ai")
+    config["datastore"]["database"] = os.environ.get("DB_NAME", "genai")
     config["datastore"]["user"] = os.environ.get("DB_USER", "postgres")
     config["datastore"]["password"] = os.environ.get("DB_PASSWORD", "password")
     # with open(path, "r") as file:

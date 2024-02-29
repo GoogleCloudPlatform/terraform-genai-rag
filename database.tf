@@ -14,21 +14,8 @@
  * limitations under the License.
  */
 
-resource "google_service_account" "runsa" {
-  project      = module.project-services.project_id
-  account_id   = "genai-rag-run-sa"
-  display_name = "Service Account for Cloud Run"
-}
-
-# resource "google_project_iam_member" "allrun" {
-#   for_each = toset(var.run_roles_list)
-#   project  = data.google_project.project.number
-#   role     = each.key
-#   member   = "serviceAccount:${google_service_account.runsa.email}"
-# }
 
 resource "google_compute_network" "main" {
-  provider                = google-beta
   name                    = "genai-rag-private-network"
   auto_create_subnetworks = true
   project                 = module.project-services.project_id
@@ -36,7 +23,6 @@ resource "google_compute_network" "main" {
 
 resource "google_compute_global_address" "main" {
   name          = "genai-rag-vpc-address"
-  provider      = google-beta
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
   prefix_length = 16
@@ -52,7 +38,6 @@ resource "google_service_networking_connection" "main" {
 }
 
 resource "google_vpc_access_connector" "main" {
-  provider       = google-beta
   project        = module.project-services.project_id
   name           = "genai-rag-vpc-cx"
   ip_cidr_range  = "10.8.0.0/28"
@@ -87,7 +72,7 @@ resource "google_sql_database_instance" "main" {
   deletion_protection = false
 }
 
-
+# Grant the Run Service Account SQL Access
 resource "google_sql_user" "main" {
   project         = module.project-services.project_id
   name            = "${google_service_account.runsa.account_id}@${module.project-services.project_id}.iam"
@@ -98,7 +83,7 @@ resource "google_sql_user" "main" {
 
 resource "google_sql_database" "database" {
   project         = var.project_id
-  name            = "todo"
+  name            = "genai"
   instance        = google_sql_database_instance.main.name
   deletion_policy = "ABANDON"
 }

@@ -59,3 +59,13 @@ variable "public_data_bucket" {
   description = "Public Data bucket for access"
   default     = "data-analytics-demos"
 }
+
+variable "database_type" {
+  type        = string
+  description = "Deploy using CloudSQL Postgres or AlloyDB"
+  default     = "cloud_sql"
+  validation {
+    condition     = contains(["cloud_sql", "alloy_db"], var.database_type)
+    error_message = "Must be either cloud_sql or alloy_db"
+  }
+}
