@@ -53,10 +53,10 @@ resource "google_storage_bucket_object" "function_source_upload" {
 # Manage Cloud Function permissions and access
 ## Create a service account to manage the function
 resource "google_service_account" "cloud_function_manage_sa" {
-  project                      = module.project-services.project_id
-  account_id                   = "notebook-deployment"
-  display_name                 = "Cloud Functions Service Account"
-  description                  = "Service account used to manage Cloud Function"
+  project      = module.project-services.project_id
+  account_id   = "notebook-deployment"
+  display_name = "Cloud Functions Service Account"
+  description  = "Service account used to manage Cloud Function"
 
   depends_on = [
   ]
