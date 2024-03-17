@@ -24,9 +24,43 @@ variable "project_id" {
   description = "Google Cloud Project ID"
 }
 
+# tflint-ignore: terraform_unused_declarations
+variable "region" {
+  type        = string
+  description = "Google Cloud Region"
+  default     = "us-central1"
+}
+
+# tflint-ignore: terraform_unused_declarations
+variable "labels" {
+  type        = map(string)
+  description = "A map of labels to apply to contained resources."
+  default     = { "genai-rag" = true }
+}
+
 variable "enable_apis" {
   type        = string
   description = "Whether or not to enable underlying apis in this solution. ."
   default     = true
 }
 
+# tflint-ignore: terraform_unused_declarations
+variable "force_destroy" {
+  type        = string
+  description = "Whether or not to protect BigQuery resources from deletion when solution is modified or changed."
+  default     = false
+}
+
+# tflint-ignore: terraform_unused_declarations
+variable "deletion_protection" {
+  type        = string
+  description = "Whether or not to protect GCS resources from deletion when solution is modified or changed."
+  default     = true
+}
+
+# tflint-ignore: terraform_unused_declarations
+variable "public_data_bucket" {
+  type        = string
+  description = "Public Data bucket for access"
+  default     = "data-analytics-demos"
+}
