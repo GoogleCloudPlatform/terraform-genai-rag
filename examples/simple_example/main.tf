@@ -18,4 +18,7 @@ module "simple_example" {
   source = "../.."
 
   project_id = var.project_id
+  # region              = "asia-southeast1"
+  # deletion_protection = false
+  # force_destroy       = true
 }
