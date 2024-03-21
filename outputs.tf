@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-output "workflow_return_project_setup" {
-  description = "Output of the project setup workflow"
-  value       = data.http.call_workflows_initial_project_setup.response_body
-}
+# output "workflow_return_project_setup" {
+#   description = "Output of the project setup workflow"
+#   value       = data.http.call_workflows_initial_project_setup.response_body
+# }
