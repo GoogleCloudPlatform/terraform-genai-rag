@@ -49,7 +49,6 @@ resource "google_cloud_run_v2_service" "retrieval_service" {
     volumes {
       name = "cloudsql"
       cloud_sql_instance {
-        instances = [google_sql_database_instance.main.connection_name]
       }
     }
 
@@ -146,9 +145,8 @@ resource "google_cloud_run_service_iam_member" "noauth_frontend" {
   member   = "allUsers"
 }
 
-# Get the identity of the deployer to run the post deploy step
-data "google_client_config" "current" {
-
+data "google_service_account_id_token" "oidc" {
+  target_audience = google_cloud_run_v2_service.retrieval_service.uri
 }
 
 # # Trigger the database init step from the retrieval service
@@ -159,7 +157,7 @@ data "http" "database_init" {
   method = "GET"
   request_headers = {
     Accept = "application/json"
-  Authorization = "Bearer ${data.google_client_config.current.access_token}" }
+  Authorization = "Bearer ${data.google_service_account_id_token.oidc.id_token}" }
   depends_on = [
     google_sql_database.database,
     google_cloud_run_v2_service.retrieval_service,
