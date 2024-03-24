@@ -64,13 +64,6 @@ resource "google_sql_database_instance" "main" {
       ipv4_enabled    = false
       private_network = "projects/${module.project-services.project_id}/global/networks/${google_compute_network.main.name}"
     }
-    insights_config {
-      query_insights_enabled  = false
-      query_plans_per_minute  = 0
-      query_string_length     = 0
-      record_application_tags = false
-      record_client_address   = false
-    }
     database_flags {
       name  = "cloudsql.iam_authentication"
       value = "on"
