@@ -83,7 +83,12 @@ resource "google_cloud_run_v2_service" "retrieval_service" {
       }
       env {
         name  = "DB_PASSWORD"
-        value = google_sql_user.service.password
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.cloud_sql_password.secret_id
+            version = "latest"
+          }
+        }
       }
     }
 

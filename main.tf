@@ -31,6 +31,7 @@ module "project-services" {
     "config.googleapis.com",
     "iam.googleapis.com",
     "run.googleapis.com",
+    "secretmanager.googleapis.com",
     "serviceusage.googleapis.com",
     "servicenetworking.googleapis.com",
     "sqladmin.googleapis.com",

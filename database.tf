@@ -90,5 +90,5 @@ resource "google_sql_user" "service" {
   project  = module.project-services.project_id
   instance = google_sql_database_instance.main.name
   type     = "BUILT_IN"
-  password = "changeme"
+  password = "${random_password.cloud_sql_password.result}"
 }
