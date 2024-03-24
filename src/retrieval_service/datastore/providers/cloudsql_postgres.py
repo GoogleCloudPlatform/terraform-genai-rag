@@ -62,7 +62,7 @@ class Client(datastore.Client[Config]):
                     f"{config.project}:{config.region}:{config.instance}",
                     "asyncpg",
                     user=f"{config.user}",
-                    password=f"{config.password}",
+                    enable_iam_auth=True,
                     db=f"{config.database}",
                 )
             await register_vector(conn)

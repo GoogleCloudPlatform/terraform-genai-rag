@@ -16,13 +16,14 @@
 
 module "project-services" {
   source                      = "terraform-google-modules/project-factory/google//modules/project_services"
-  version                     = "14.2.0"
+  version                     = "14.3.0"
   disable_services_on_destroy = false
 
   project_id  = var.project_id
   enable_apis = var.enable_apis
 
   activate_apis = [
+    "aiplatform.googleapis.com",
     "artifactregistry.googleapis.com",
     "cloudapis.googleapis.com",
     "cloudbuild.googleapis.com",
@@ -32,7 +33,7 @@ module "project-services" {
     "iam.googleapis.com",
     "run.googleapis.com",
     "serviceusage.googleapis.com",
-    "sql.googleapis.com",
+    "sqladmin.googleapis.com",
     "storage-api.googleapis.com",
     "storage.googleapis.com",
     "workflows.googleapis.com",
@@ -50,33 +51,4 @@ module "project-services" {
 
 resource "random_id" "id" {
   byte_length = 4
-}
-
-# Set up the provisioning storage bucket
-resource "google_storage_bucket" "raw_bucket" {
-  name                        = "gcp-genai-rag-provisioning-${random_id.id.hex}"
-  project                     = module.project-services.project_id
-  location                    = var.region
-  uniform_bucket_level_access = true
-  force_destroy               = var.force_destroy
-
-  public_access_prevention = "enforced" # need to validate if this is a hard requirement
-}
-
-resource "google_storage_bucket_object" "airport" {
-  name   = "airport_dataset.csv"
-  source = "/data/airport_dataset.csv"
-  bucket = google_storage_bucket.raw_bucket.name
-}
-
-resource "google_storage_bucket_object" "amenity" {
-  name   = "amenity_dataset.csv"
-  source = "/data/amenity_dataset.csv"
-  bucket = google_storage_bucket.raw_bucket.name
-}
-
-resource "google_storage_bucket_object" "flights" {
-  name   = "flights_dataset.csv"
-  source = "/data/flights_dataset.csv"
-  bucket = google_storage_bucket.raw_bucket.name
 }

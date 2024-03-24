@@ -22,7 +22,7 @@ from main import init_app
 
 
 async def main():
-    PORT = int(os.getenv("PORT", default=8081))
+    PORT = int(os.getenv("PORT", default=8080))
     HOST = os.getenv("HOST", default="0.0.0.0")
     CLIENT_ID = os.getenv("CLIENT_ID")
     SECRET_KEY = os.getenv("SECRET_KEY")

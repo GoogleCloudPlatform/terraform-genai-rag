@@ -28,6 +28,8 @@ from langchain_google_vertexai import VertexAI
 from tools import initialize_tools
 
 set_verbose(bool(os.getenv("DEBUG", default=False)))
+
+# URL to connect to the backend service
 BASE_URL = os.getenv("BASE_URL", default="http://127.0.0.1:8080")
 
 # aiohttp context

@@ -54,18 +54,14 @@ variable "deletion_protection" {
   default     = true
 }
 
-variable "public_data_bucket" {
+variable "frontend_container" {
   type        = string
-  description = "Public Data bucket for access"
-  default     = "data-analytics-demos"
+  description = "The public Artifact Registry URI for the frontend container"
+  default     = "us-central1-docker.pkg.dev/davenport-boutique/cloud-run-source-deploy/frontend-service:latest"
 }
 
-variable "database_type" {
+variable "retrieval_container" {
   type        = string
-  description = "Deploy using CloudSQL Postgres or AlloyDB"
-  default     = "cloud_sql"
-  validation {
-    condition     = contains(["cloud_sql", "alloy_db"], var.database_type)
-    error_message = "Must be either cloud_sql or alloy_db"
-  }
+  description = "The public Artifact Registry URI for the retrieval container"
+  default     = "us-central1-docker.pkg.dev/davenport-boutique/cloud-run-source-deploy/retrieval-service:latest"
 }

@@ -72,7 +72,15 @@ resource "google_sql_database_instance" "main" {
   deletion_protection = false
 }
 
-# Grant the Run Service Account SQL Access
+# # Create Database
+resource "google_sql_database" "database" {
+  project         = var.project_id
+  name            = "assistantdemo"
+  instance        = google_sql_database_instance.main.name
+  deletion_policy = "ABANDON"
+}
+
+# # Grant the Run Service Account SQL Access
 resource "google_sql_user" "main" {
   project         = module.project-services.project_id
   name            = "${google_service_account.runsa.account_id}@${module.project-services.project_id}.iam"
@@ -81,9 +89,3 @@ resource "google_sql_user" "main" {
   deletion_policy = "ABANDON"
 }
 
-resource "google_sql_database" "database" {
-  project         = var.project_id
-  name            = "genai"
-  instance        = google_sql_database_instance.main.name
-  deletion_policy = "ABANDON"
-}

@@ -159,7 +159,7 @@ def init_app(client_id: Optional[str], secret_key: Optional[str]) -> FastAPI:
 
 
 if __name__ == "__main__":
-    PORT = int(os.getenv("PORT", default=8081))
+    PORT = int(os.getenv("PORT", default=8080))
     HOST = os.getenv("HOST", default="0.0.0.0")
     CLIENT_ID = os.getenv("CLIENT_ID")
     SECRET_KEY = os.getenv("SECRET_KEY")

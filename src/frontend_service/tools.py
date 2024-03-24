@@ -24,7 +24,10 @@ from langchain.agents.agent import ExceptionTool  # type: ignore
 from langchain.tools import StructuredTool
 from pydantic.v1 import BaseModel, Field
 
-BASE_URL = os.getenv("BASE_URL", default="http://127.0.0.1:8080")
+# URL to connect to the backend services
+SERVICE_URL = os.getenv("SERVICE_URL", default="127.0.0.1")
+BASE_URL = "http://"+SERVICE_URL+":8080"
+SERVICE_ACCOUNT_EMAIL = os.getenv("SERVICE_ACCOUNT_EMAIL", default=None)
 CREDENTIALS = None
 
 
@@ -37,12 +40,21 @@ def get_id_token():
     if CREDENTIALS is None:
         CREDENTIALS, _ = google.auth.default()
         if not hasattr(CREDENTIALS, "id_token"):
-            # Use Compute Engine default credential
-            CREDENTIALS = compute_engine.IDTokenCredentials(
-                request=Request(),
-                target_audience=BASE_URL,
-                use_metadata_identity_endpoint=True,
-            )
+            if SERVICE_ACCOUNT_EMAIL:
+                # Use Specific SA
+                CREDENTIALS = compute_engine.IDTokenCredentials(
+                    request=Request(),
+                    service_account_email=SERVICE_ACCOUNT_EMAIL,
+                    target_audience=BASE_URL,
+                    use_metadata_identity_endpoint=True,
+                )
+            else:
+                # Use Compute Engine default credential
+                CREDENTIALS = compute_engine.IDTokenCredentials(
+                    request=Request(),
+                    target_audience=BASE_URL,
+                    use_metadata_identity_endpoint=True,
+                )
     if not CREDENTIALS.valid:
         CREDENTIALS.refresh(Request())
     if hasattr(CREDENTIALS, "id_token"):

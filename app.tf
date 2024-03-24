@@ -18,11 +18,130 @@ resource "google_service_account" "runsa" {
   project      = module.project-services.project_id
   account_id   = "genai-rag-run-sa"
   display_name = "Service Account for Cloud Run"
+
 }
 
-# resource "google_project_iam_member" "allrun" {
-#   for_each = toset(var.run_roles_list)
-#   project  = data.google_project.project.number
-#   role     = each.key
-#   member   = "serviceAccount:${google_service_account.runsa.email}"
-# }
+resource "google_project_iam_member" "allrun" {
+  for_each = toset([
+    "roles/cloudsql.instanceUser",
+    "roles/cloudsql.client",
+    "roles.run.invoker",
+  ])
+
+  project = module.project-services.project_id
+  role    = each.key
+  member  = "serviceAccount:${google_service_account.runsa.email}"
+}
+
+resource "google_cloud_run_v2_service" "retrieval_service" {
+  name     = "retrieval-service"
+  location = var.region
+  project  = module.project-services.project_id
+
+  template {
+    service_account = google_service_account.runsa.email
+    labels          = var.labels
+
+    volumes {
+      name = "cloudsql"
+      cloud_sql_instance {
+        instances = [google_sql_database_instance.instance.connection_name]
+      }
+    }
+
+    containers {
+      image = var.retrieval_container
+      env {
+        name  = "APP_HOST"
+        value = "0.0.0.0"
+      }
+      env {
+        name  = "APP_PORT"
+        value = "8080"
+      }
+      env {
+        name  = "DB_KIND"
+        value = "cloudsql-postgres"
+      }
+      env {
+        name  = "DB_PROJECT"
+        value = module.project-services.project_id
+      }
+      env {
+        name  = "DB_REGION"
+        value = var.region
+      }
+      env {
+        name  = "DB_INSTANCE"
+        value = google_sql_database_instance.main.name
+      }
+      env {
+        name  = "DB_NAME"
+        value = "assistantdemo"
+      }
+      env {
+        name  = "DB_USER"
+        value = "postgres"
+      }
+    }
+
+    vpc_access {
+      connector = google_vpc_access_connector.connector.id
+      egress    = "ALL_TRAFFIC"
+    }
+  }
+
+  depends_on = [
+    google_sql_user.main,
+    google_sql_database.database
+  ]
+}
+
+
+resource "google_cloud_run_v2_service" "frontend_service" {
+  name     = "frontend-service"
+  location = var.region
+  project  = module.project-services.project_id
+
+  template {
+    service_account = google_service_account.runsa.email
+    labels          = var.labels
+
+    volumes {
+      name = "cloudsql"
+      cloud_sql_instance {
+        instances = [google_sql_database_instance.instance.connection_name]
+      }
+    }
+
+    containers {
+      image = var.frontend_container
+      env {
+        name  = "SERVICE_URL"
+        value = google_cloud_run_v2_service.retrieval_service.uri
+      }
+      env {
+        name  = "SERVICE_ACCOUNT_EMAIL"
+        value = google_service_account.runsa.email
+      }
+    }
+
+    vpc_access {
+      connector = google_vpc_access_connector.connector.id
+      egress    = "ALL_TRAFFIC"
+    }
+  }
+
+  depends_on = [
+    google_sql_user.main,
+    google_sql_database.database
+  ]
+}
+
+resource "google_cloud_run_service_iam_member" "noauth_frontend" {
+  location = google_cloud_run_v2_service.frontend_service.location
+  project  = google_cloud_run_v2_service.frontend_service.project
+  service  = google_cloud_run_v2_service.frontend_service.name
+  role     = "roles/run.invoker"
+  member   = "allUsers"
+}

@@ -192,3 +192,22 @@ async def list_tickets(
     ds: datastore.Client = request.app.state.datastore
     results = await ds.list_tickets(user_info["user_id"])
     return results
+
+@routes.get("/data/import")
+async def import_data(
+    request: Request,
+):
+    airports_ds_path = "./data/airport_dataset.csv"
+    amenities_ds_path = "./data/amenity_dataset.csv"
+    flights_ds_path = "./data/flights_dataset.csv"
+
+    # cfg = parse_config()
+    # ds = await datastore.create(cfg.datastore)
+    ds = datastore.Client
+    airports, amenities, flights = await ds.load_dataset(
+        airports_ds_path, amenities_ds_path, flights_ds_path
+    )
+    await ds.initialize_data(airports, amenities, flights)
+    await ds.close()
+
+    print("database init done.")

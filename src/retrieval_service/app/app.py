@@ -36,19 +36,18 @@ class AppConfig(BaseModel):
     clientId: Optional[str] = None
 
 
-def parse_config(path: str) -> AppConfig:
+def parse_config() -> AppConfig:
     config = {}
     config["host"] = os.environ.get("APP_HOST", "127.0.0.1")
     config["port"] = os.environ.get("APP_PORT", 8080)
     config["datastore"] = {}
-    config["datastore"]["kind"] = os.environ.get("DB_KIND", "postgres")
-    config["datastore"]["host"] = os.environ.get("DB_HOST", "127.0.0.1")
-    config["datastore"]["port"] = os.environ.get("DB_PORT", 5432)
-    config["datastore"]["database"] = os.environ.get("DB_NAME", "genai")
+    config["datastore"]["kind"] = os.environ.get("DB_KIND", "cloudsql-postgres")
+    config["datastore"]["project"] = os.environ.get("DB_PROJECT", "my-project")
+    config["datastore"]["region"] = os.environ.get("DB_REGION", "us-central1")
+    config["datastore"]["instance"] = os.environ.get("DB_INSTANCE", "my-instance")
+    config["datastore"]["database"] = os.environ.get("DB_NAME", "assistantdemo")
     config["datastore"]["user"] = os.environ.get("DB_USER", "postgres")
     config["datastore"]["password"] = os.environ.get("DB_PASSWORD", "password")
-    # with open(path, "r") as file:
-    #    config = yaml.safe_load(file)
     return AppConfig(**config)
 
 
