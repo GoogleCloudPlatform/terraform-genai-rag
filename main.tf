@@ -16,7 +16,7 @@
 
 module "project-services" {
   source                      = "terraform-google-modules/project-factory/google//modules/project_services"
-  version                     = "14.3.0"
+  version                     = "14.5.0"
   disable_services_on_destroy = false
 
   project_id  = var.project_id
@@ -27,26 +27,27 @@ module "project-services" {
     "artifactregistry.googleapis.com",
     "cloudapis.googleapis.com",
     "cloudbuild.googleapis.com",
-    "cloudfunctions.googleapis.com",
+    # "cloudfunctions.googleapis.com",
     "compute.googleapis.com",
     "config.googleapis.com",
     "iam.googleapis.com",
     "run.googleapis.com",
     "serviceusage.googleapis.com",
+    "servicenetworking.googleapis.com",
     "sqladmin.googleapis.com",
     "storage-api.googleapis.com",
     "storage.googleapis.com",
-    "workflows.googleapis.com",
+    # "workflows.googleapis.com",
   ]
 
-  activate_api_identities = [
-    {
-      api = "workflows.googleapis.com"
-      roles = [
-        "roles/workflows.viewer"
-      ]
-    }
-  ]
+  # activate_api_identities = [
+  #   {
+  #     api = "workflows.googleapis.com"
+  #     roles = [
+  #       "roles/workflows.viewer"
+  #     ]
+  #   }
+  # ]
 }
 
 resource "random_id" "id" {

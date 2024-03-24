@@ -70,6 +70,10 @@ resource "google_sql_database_instance" "main" {
     }
   }
   deletion_protection = false
+
+  depends_on = [
+    google_service_networking_connection.main,
+  ]
 }
 
 # # Create Database

@@ -17,5 +17,5 @@
 
 output "deployment_ip_address" {
   description = "Web URL link"
-  value       = "http://" + google_cloud_run_service.frontend_service.status.url
+  value       = "http://${google_cloud_run_v2_service.frontend_service.uri}"
 }

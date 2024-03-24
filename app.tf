@@ -45,7 +45,7 @@ resource "google_cloud_run_v2_service" "retrieval_service" {
     volumes {
       name = "cloudsql"
       cloud_sql_instance {
-        instances = [google_sql_database_instance.instance.connection_name]
+        instances = [google_sql_database_instance.main.connection_name]
       }
     }
 
@@ -86,7 +86,7 @@ resource "google_cloud_run_v2_service" "retrieval_service" {
     }
 
     vpc_access {
-      connector = google_vpc_access_connector.connector.id
+      connector = google_vpc_access_connector.main.id
       egress    = "ALL_TRAFFIC"
     }
   }
@@ -107,13 +107,6 @@ resource "google_cloud_run_v2_service" "frontend_service" {
     service_account = google_service_account.runsa.email
     labels          = var.labels
 
-    volumes {
-      name = "cloudsql"
-      cloud_sql_instance {
-        instances = [google_sql_database_instance.instance.connection_name]
-      }
-    }
-
     containers {
       image = var.frontend_container
       env {
@@ -125,17 +118,12 @@ resource "google_cloud_run_v2_service" "frontend_service" {
         value = google_service_account.runsa.email
       }
     }
-
-    vpc_access {
-      connector = google_vpc_access_connector.connector.id
-      egress    = "ALL_TRAFFIC"
-    }
   }
 
-  depends_on = [
-    google_sql_user.main,
-    google_sql_database.database
-  ]
+  # depends_on = [
+  #   google_sql_user.main,
+  #   google_sql_database.database
+  # ]
 }
 
 resource "google_cloud_run_service_iam_member" "noauth_frontend" {
