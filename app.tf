@@ -29,6 +29,7 @@ resource "google_project_iam_member" "allrun" {
     "roles/cloudsql.client",
     "roles/run.invoker",
     "roles/aiplatform.user",
+    "roles/iam.serviceAccountTokenCreator",
   ])
 
   project = module.project-services.project_id
@@ -139,6 +140,8 @@ resource "google_cloud_run_service_iam_member" "noauth_frontend" {
   member   = "allUsers"
 }
 
+
+
 data "google_service_account_id_token" "oidc" {
   target_audience = google_cloud_run_v2_service.retrieval_service.uri
 }
@@ -152,8 +155,10 @@ data "http" "database_init" {
   request_headers = {
     Accept = "application/json"
   Authorization = "Bearer ${data.google_service_account_id_token.oidc.id_token}" }
+
   depends_on = [
     google_sql_database.database,
     google_cloud_run_v2_service.retrieval_service,
+    data.google_service_account_id_token.oidc,
   ]
 }
