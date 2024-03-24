@@ -25,7 +25,8 @@ resource "google_project_iam_member" "allrun" {
   for_each = toset([
     "roles/cloudsql.instanceUser",
     "roles/cloudsql.client",
-    "roles.run.invoker",
+    "roles/run.invoker",
+    "roles/aiplatform.user",
   ])
 
   project = module.project-services.project_id
@@ -77,11 +78,15 @@ resource "google_cloud_run_v2_service" "retrieval_service" {
       }
       env {
         name  = "DB_NAME"
-        value = "assistantdemo"
+        value = google_sql_database.database.name
       }
       env {
         name  = "DB_USER"
-        value = "postgres"
+        value = google_sql_user.main.name
+      }
+      env {
+        name  = "DB_PASSWORD"
+        value = google_sql_user.main.password
       }
     }
 
@@ -90,11 +95,6 @@ resource "google_cloud_run_v2_service" "retrieval_service" {
       egress    = "ALL_TRAFFIC"
     }
   }
-
-  depends_on = [
-    google_sql_user.main,
-    google_sql_database.database
-  ]
 }
 
 
@@ -117,6 +117,14 @@ resource "google_cloud_run_v2_service" "frontend_service" {
         name  = "SERVICE_ACCOUNT_EMAIL"
         value = google_service_account.runsa.email
       }
+      env {
+        name  = "ORCHESTRATION_TYPE"
+        value = "langchain-tools"
+      }
+      env {
+        name  = "DEBUG"
+        value = "True"
+      }
     }
   }
 
@@ -132,4 +140,21 @@ resource "google_cloud_run_service_iam_member" "noauth_frontend" {
   service  = google_cloud_run_v2_service.frontend_service.name
   role     = "roles/run.invoker"
   member   = "allUsers"
+}
+
+data "google_client_config" "current" {
+
+}
+
+## Trigger the execution of the setup workflow with an API call
+data "http" "database_init" {
+  url    = "${google_cloud_run_v2_service.retrieval_service.uri}/data/import"
+  method = "GET"
+  request_headers = {
+    Accept = "application/json"
+  Authorization = "Bearer ${data.google_client_config.current.access_token}" }
+  depends_on = [
+    google_sql_database.database,
+    google_cloud_run_v2_service.retrieval_service,
+  ]
 }

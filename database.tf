@@ -64,6 +64,13 @@ resource "google_sql_database_instance" "main" {
       ipv4_enabled    = false
       private_network = "projects/${module.project-services.project_id}/global/networks/${google_compute_network.main.name}"
     }
+    insights_config {
+      query_insights_enabled  = false
+      query_plans_per_minute  = 0
+      query_string_length     = 0
+      record_application_tags = false
+      record_client_address   = false
+    }
     database_flags {
       name  = "cloudsql.iam_authentication"
       value = "on"
@@ -84,12 +91,11 @@ resource "google_sql_database" "database" {
   deletion_policy = "ABANDON"
 }
 
-# # Grant the Run Service Account SQL Access
-resource "google_sql_user" "main" {
-  project         = module.project-services.project_id
-  name            = "${google_service_account.runsa.account_id}@${module.project-services.project_id}.iam"
-  type            = "CLOUD_IAM_SERVICE_ACCOUNT"
-  instance        = google_sql_database_instance.main.name
-  deletion_policy = "ABANDON"
+# # Create Cloud SQL User
+resource "google_sql_user" "app_service" {
+  name     = "retrieval-service"
+  project  = module.project-services.project_id
+  instance = google_sql_database_instance.main.name
+  type     = "BUILT_IN"
+  password = "changeme"
 }
-

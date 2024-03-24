@@ -202,8 +202,8 @@ async def import_data(
     flights_ds_path = "./data/flights_dataset.csv"
 
     # cfg = parse_config()
-    # ds = await datastore.create(cfg.datastore)
-    ds = datastore.Client
+    ds: datastore.Client = request.app.state.datastore
+    # ds = datastore.Client
     airports, amenities, flights = await ds.load_dataset(
         airports_ds_path, amenities_ds_path, flights_ds_path
     )

@@ -25,8 +25,7 @@ from langchain.tools import StructuredTool
 from pydantic.v1 import BaseModel, Field
 
 # URL to connect to the backend services
-SERVICE_URL = os.getenv("SERVICE_URL", default="127.0.0.1")
-BASE_URL = "http://"+SERVICE_URL+":8080"
+BASE_URL = os.getenv("SERVICE_URL", default="127.0.0.1") # f"{SERVICE_URL}:8080"
 SERVICE_ACCOUNT_EMAIL = os.getenv("SERVICE_ACCOUNT_EMAIL", default=None)
 CREDENTIALS = None
 
@@ -39,22 +38,21 @@ def get_id_token():
     global CREDENTIALS
     if CREDENTIALS is None:
         CREDENTIALS, _ = google.auth.default()
+        if SERVICE_ACCOUNT_EMAIL:
+            # Use Specific SA
+            CREDENTIALS = compute_engine.Credentials(
+                service_account_email=SERVICE_ACCOUNT_EMAIL,
+                scopes=["https://www.googleapis.com/auth/cloud-platform"],
+            )
         if not hasattr(CREDENTIALS, "id_token"):
-            if SERVICE_ACCOUNT_EMAIL:
-                # Use Specific SA
-                CREDENTIALS = compute_engine.IDTokenCredentials(
-                    request=Request(),
-                    service_account_email=SERVICE_ACCOUNT_EMAIL,
-                    target_audience=BASE_URL,
-                    use_metadata_identity_endpoint=True,
-                )
-            else:
-                # Use Compute Engine default credential
-                CREDENTIALS = compute_engine.IDTokenCredentials(
-                    request=Request(),
-                    target_audience=BASE_URL,
-                    use_metadata_identity_endpoint=True,
-                )
+            # Use Compute Engine default credential
+            CREDENTIALS = compute_engine.IDTokenCredentials(
+                request=Request(),
+                target_audience=BASE_URL,
+                use_metadata_identity_endpoint=True,
+            )
+        else:
+            pass
     if not CREDENTIALS.valid:
         CREDENTIALS.refresh(Request())
     if hasattr(CREDENTIALS, "id_token"):

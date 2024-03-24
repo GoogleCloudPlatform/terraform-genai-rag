@@ -27,7 +27,6 @@ module "project-services" {
     "artifactregistry.googleapis.com",
     "cloudapis.googleapis.com",
     "cloudbuild.googleapis.com",
-    # "cloudfunctions.googleapis.com",
     "compute.googleapis.com",
     "config.googleapis.com",
     "iam.googleapis.com",
@@ -37,17 +36,8 @@ module "project-services" {
     "sqladmin.googleapis.com",
     "storage-api.googleapis.com",
     "storage.googleapis.com",
-    # "workflows.googleapis.com",
+    "vpcaccess.googleapis.com",
   ]
-
-  # activate_api_identities = [
-  #   {
-  #     api = "workflows.googleapis.com"
-  #     roles = [
-  #       "roles/workflows.viewer"
-  #     ]
-  #   }
-  # ]
 }
 
 resource "random_id" "id" {

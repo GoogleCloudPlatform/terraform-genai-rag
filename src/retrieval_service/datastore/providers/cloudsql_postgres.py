@@ -18,7 +18,7 @@ from typing import Any, Dict, Literal, Optional
 
 import asyncpg
 import sqlalchemy
-from google.cloud.sql.connector import Connector
+from google.cloud.sql.connector import Connector, IPTypes
 from pgvector.asyncpg import register_vector
 from pydantic import BaseModel
 from sqlalchemy import text
@@ -62,9 +62,12 @@ class Client(datastore.Client[Config]):
                     f"{config.project}:{config.region}:{config.instance}",
                     "asyncpg",
                     user=f"{config.user}",
-                    enable_iam_auth=True,
+                    password=f"{config.password}",
                     db=f"{config.database}",
+                    # enable_iam_auth=True,
+                    ip_type=IPTypes.PRIVATE,
                 )
+            await conn.execute('CREATE EXTENSION IF NOT EXISTS vector')
             await register_vector(conn)
             return conn
 
