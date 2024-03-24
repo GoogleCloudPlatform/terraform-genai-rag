@@ -45,7 +45,7 @@ variable "enable_apis" {
 variable "deletion_protection" {
   type        = string
   description = "Whether or not to protect Cloud SQL resources from deletion when solution is modified or changed."
-  default     = true
+  default     = false
 }
 
 variable "frontend_container" {
