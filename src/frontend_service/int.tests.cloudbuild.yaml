@@ -43,7 +43,7 @@ steps:
           -H 'Content-Type: application/json' \
           -d '{"prompt":"How can you help me?"}' \
           $$URL/chat)
-        
+
         if grep -q "400" <<< "$msg"; then
           echo "Chat Handler Test: PASSED"
         else
