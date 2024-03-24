@@ -151,8 +151,8 @@ data "google_client_config" "current" {
 
 }
 
+# tflint-ignore: terraform_unused_declarations
 # # Trigger the database init step from the retrieval service
-# tflint-ignore: terraform unused_declarations
 data "http" "database_init" {
   url    = "${google_cloud_run_v2_service.retrieval_service.uri}/data/import"
   method = "GET"
