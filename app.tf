@@ -46,12 +46,6 @@ resource "google_cloud_run_v2_service" "retrieval_service" {
     service_account = google_service_account.runsa.email
     labels          = var.labels
 
-    volumes {
-      name = "cloudsql"
-      cloud_sql_instance {
-      }
-    }
-
     containers {
       image = var.retrieval_container
       env {
