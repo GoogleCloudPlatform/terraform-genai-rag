@@ -16,13 +16,13 @@
 
 ## Django Admin Password
 resource "random_password" "cloud_sql_password" {
-  length  = 16
-  special = true
+  length           = 16
+  special          = true
   override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
 resource "google_secret_manager_secret" "cloud_sql_password" {
-  project = module.project-services.project_id
+  project   = module.project-services.project_id
   secret_id = "genai-cloud-sql-password-${random_id.id.hex}"
   replication {
     # Avoid conflict with constraints/gcp.resourceLocations for Secret Manager.
@@ -40,7 +40,7 @@ resource "google_secret_manager_secret" "cloud_sql_password" {
 }
 
 resource "google_secret_manager_secret_iam_binding" "cloud_sql_password" {
-  project = module.project-services.project_id
+  project   = module.project-services.project_id
   secret_id = google_secret_manager_secret.cloud_sql_password.id
   role      = "roles/secretmanager.secretAccessor"
   members   = ["serviceAccount:${google_service_account.runsa.email}"]
