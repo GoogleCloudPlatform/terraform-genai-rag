@@ -125,15 +125,10 @@ resource "google_cloud_run_v2_service" "frontend_service" {
       }
       env {
         name  = "DEBUG"
-        value = "True"
+        value = "False"
       }
     }
   }
-
-  # depends_on = [
-  #   google_sql_user.service,
-  #   google_sql_database.database
-  # ]
 }
 
 # # Set the frontend service to allow all users
