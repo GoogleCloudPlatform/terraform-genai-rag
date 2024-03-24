@@ -25,8 +25,6 @@ resource "google_secret_manager_secret" "cloud_sql_password" {
   project   = module.project-services.project_id
   secret_id = "genai-cloud-sql-password-${random_id.id.hex}"
   replication {
-    # Avoid conflict with constraints/gcp.resourceLocations for Secret Manager.
-    # https://cloud.google.com/secret-manager/docs/choosing-replication
     user_managed {
       replicas {
         location = var.region
