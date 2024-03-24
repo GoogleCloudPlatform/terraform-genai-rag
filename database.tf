@@ -91,4 +91,5 @@ resource "google_sql_user" "service" {
   instance = google_sql_database_instance.main.name
   type     = "BUILT_IN"
   password = random_password.cloud_sql_password.result
+  deletion_policy = "ABANDON"
 }
