@@ -76,7 +76,7 @@ resource "google_sql_database_instance" "main" {
       value = "on"
     }
   }
-  deletion_protection = false
+  deletion_protection = var.deletion_protection
 
   depends_on = [
     google_service_networking_connection.main,
@@ -92,7 +92,7 @@ resource "google_sql_database" "database" {
 }
 
 # # Create Cloud SQL User
-resource "google_sql_user" "app_service" {
+resource "google_sql_user" "service" {
   name     = "retrieval-service"
   project  = module.project-services.project_id
   instance = google_sql_database_instance.main.name

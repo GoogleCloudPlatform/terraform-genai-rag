@@ -85,11 +85,11 @@ resource "google_cloud_run_v2_service" "retrieval_service" {
       }
       env {
         name  = "DB_USER"
-        value = google_sql_user.main.name
+        value = google_sql_user.service.name
       }
       env {
         name  = "DB_PASSWORD"
-        value = google_sql_user.main.password
+        value = google_sql_user.service.password
       }
     }
 
@@ -132,7 +132,7 @@ resource "google_cloud_run_v2_service" "frontend_service" {
   }
 
   # depends_on = [
-  #   google_sql_user.main,
+  #   google_sql_user.service,
   #   google_sql_database.database
   # ]
 }
@@ -152,6 +152,7 @@ data "google_client_config" "current" {
 }
 
 # # Trigger the database init step from the retrieval service
+# tflint-ignore: terraform unused_declarations
 data "http" "database_init" {
   url    = "${google_cloud_run_v2_service.retrieval_service.uri}/data/import"
   method = "GET"
