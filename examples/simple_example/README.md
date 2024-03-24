@@ -11,8 +11,7 @@ This example illustrates how to use the `simple_example` module.
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
+No outputs.
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 

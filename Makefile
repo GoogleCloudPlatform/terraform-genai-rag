@@ -1,4 +1,4 @@
-# Copyright 2019 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -77,6 +77,7 @@ docker_test_lint:
 		/usr/local/bin/test_lint.sh
 
 # Generate documentation
+# add  -p infra to docs if needed
 .PHONY: docker_generate_docs
 docker_generate_docs:
 	docker run --rm -it \
