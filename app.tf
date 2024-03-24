@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+# Creates the Service Account to be used by Cloud Run
 resource "google_service_account" "runsa" {
   project      = module.project-services.project_id
   account_id   = "genai-rag-run-sa"
@@ -21,6 +22,7 @@ resource "google_service_account" "runsa" {
 
 }
 
+# # Applies permissions to the Cloud Run SA
 resource "google_project_iam_member" "allrun" {
   for_each = toset([
     "roles/cloudsql.instanceUser",
@@ -34,6 +36,7 @@ resource "google_project_iam_member" "allrun" {
   member  = "serviceAccount:${google_service_account.runsa.email}"
 }
 
+# Deploys a service to be used for the database
 resource "google_cloud_run_v2_service" "retrieval_service" {
   name     = "retrieval-service"
   location = var.region
@@ -97,7 +100,7 @@ resource "google_cloud_run_v2_service" "retrieval_service" {
   }
 }
 
-
+# Deploys a service to be used for the frontend
 resource "google_cloud_run_v2_service" "frontend_service" {
   name     = "frontend-service"
   location = var.region
@@ -134,6 +137,7 @@ resource "google_cloud_run_v2_service" "frontend_service" {
   # ]
 }
 
+# # Set the frontend service to allow all users
 resource "google_cloud_run_service_iam_member" "noauth_frontend" {
   location = google_cloud_run_v2_service.frontend_service.location
   project  = google_cloud_run_v2_service.frontend_service.project
@@ -142,11 +146,12 @@ resource "google_cloud_run_service_iam_member" "noauth_frontend" {
   member   = "allUsers"
 }
 
+# Get the identity of the deployer to run the post deploy step
 data "google_client_config" "current" {
 
 }
 
-## Trigger the execution of the setup workflow with an API call
+# # Trigger the database init step from the retrieval service
 data "http" "database_init" {
   url    = "${google_cloud_run_v2_service.retrieval_service.uri}/data/import"
   method = "GET"
