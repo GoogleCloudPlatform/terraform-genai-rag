@@ -22,7 +22,3 @@ steps:
   - --destination=us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/frontend-service
   - --cache=true
   - --cache-ttl=6h
-# # Deploy container image to Cloud Run
-# - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-#   entrypoint: gcloud
-#   args: ['run', 'deploy', 'retrieval-service', '--image', 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/retrieval-service', '--region', 'us-central1']
