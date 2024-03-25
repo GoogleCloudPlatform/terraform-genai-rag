@@ -34,7 +34,7 @@ resource "google_service_networking_connection" "main" {
   network                 = google_compute_network.main.self_link
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.main.name]
-
+  deletion_policy         = "ABANDON"
 }
 
 resource "google_vpc_access_connector" "main" {
@@ -86,10 +86,10 @@ resource "google_sql_database" "database" {
 
 # # Create Cloud SQL User
 resource "google_sql_user" "service" {
-  name     = "retrieval-service"
-  project  = module.project-services.project_id
-  instance = google_sql_database_instance.main.name
-  type     = "BUILT_IN"
-  password = random_password.cloud_sql_password.result
+  name            = "retrieval-service"
+  project         = module.project-services.project_id
+  instance        = google_sql_database_instance.main.name
+  type            = "BUILT_IN"
+  password        = random_password.cloud_sql_password.result
   deletion_policy = "ABANDON"
 }
