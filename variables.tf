@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,14 +24,12 @@ variable "project_id" {
   description = "Google Cloud Project ID"
 }
 
-# tflint-ignore: terraform_unused_declarations
 variable "region" {
   type        = string
   description = "Google Cloud Region"
   default     = "us-central1"
 }
 
-# tflint-ignore: terraform_unused_declarations
 variable "labels" {
   type        = map(string)
   description = "A map of labels to apply to contained resources."
@@ -44,23 +42,20 @@ variable "enable_apis" {
   default     = true
 }
 
-# tflint-ignore: terraform_unused_declarations
-variable "force_destroy" {
+variable "deletion_protection" {
   type        = string
-  description = "Whether or not to protect BigQuery resources from deletion when solution is modified or changed."
+  description = "Whether or not to protect Cloud SQL resources from deletion when solution is modified or changed."
   default     = false
 }
 
-# tflint-ignore: terraform_unused_declarations
-variable "deletion_protection" {
+variable "frontend_container" {
   type        = string
-  description = "Whether or not to protect GCS resources from deletion when solution is modified or changed."
-  default     = true
+  description = "The public Artifact Registry URI for the frontend container"
+  default     = "us-docker.pkg.dev/google-samples/containers/jss/rag-frontend-service:v0.0.1"
 }
 
-# tflint-ignore: terraform_unused_declarations
-variable "public_data_bucket" {
+variable "retrieval_container" {
   type        = string
-  description = "Public Data bucket for access"
-  default     = "data-analytics-demos"
+  description = "The public Artifact Registry URI for the retrieval container"
+  default     = "us-docker.pkg.dev/google-samples/containers/jss/rag-retrieval-service:v0.0.1"
 }

@@ -8,6 +8,8 @@ credentials.json
 # Python
 *.pyc
 *.txt
+!*requirements.txt
+!*requirements-test.txt
 *.exe
 *.cfg
 *.sh

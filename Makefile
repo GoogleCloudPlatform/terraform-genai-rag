@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -71,19 +71,20 @@ docker_test_integration:
 docker_test_lint:
 	docker run --rm -it \
 		-e ENABLE_BPMETADATA \
-		-e EXCLUDE_LINT_DIRS \
+		-e EXCLUDE_LINT_DIRS="\./src/frontend_service/*|\./src/retrieval_service" \
 		-v "$(CURDIR)":/workspace \
 		$(REGISTRY_URL)/${DOCKER_IMAGE_DEVELOPER_TOOLS}:${DOCKER_TAG_VERSION_DEVELOPER_TOOLS} \
 		/usr/local/bin/test_lint.sh
 
 # Generate documentation
+# add  -p infra to docs if needed
 .PHONY: docker_generate_docs
 docker_generate_docs:
 	docker run --rm -it \
 		-e ENABLE_BPMETADATA \
-		-v "$(dir ${CURDIR})":/workspace \
+		-v "$(CURDIR)":/workspace \
 		$(REGISTRY_URL)/${DOCKER_IMAGE_DEVELOPER_TOOLS}:${DOCKER_TAG_VERSION_DEVELOPER_TOOLS} \
-		/bin/bash -c 'source /usr/local/bin/task_helper_functions.sh && generate_docs "-d -p infra"'
+		/bin/bash -c 'source /usr/local/bin/task_helper_functions.sh && generate_docs -d'
 
 # Alias for backwards compatibility
 .PHONY: generate_docs

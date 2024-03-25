@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,29 +23,24 @@ module "project-services" {
   enable_apis = var.enable_apis
 
   activate_apis = [
+    "aiplatform.googleapis.com",
     "artifactregistry.googleapis.com",
-    "biglake.googleapis.com",
-    "bigquery.googleapis.com",
-    "bigqueryconnection.googleapis.com",
-    "bigqueryconnection.googleapis.com",
-    "bigquerydatapolicy.googleapis.com",
-    "bigquerydatatransfer.googleapis.com",
-    "bigquerymigration.googleapis.com",
-    "bigqueryreservation.googleapis.com",
-    "bigquerystorage.googleapis.com",
     "cloudapis.googleapis.com",
     "cloudbuild.googleapis.com",
-    "cloudfunctions.googleapis.com",
     "compute.googleapis.com",
     "config.googleapis.com",
-    "datacatalog.googleapis.com",
-    "datalineage.googleapis.com",
-    "dataplex.googleapis.com",
-    "dataproc.googleapis.com",
     "iam.googleapis.com",
+    "run.googleapis.com",
+    "secretmanager.googleapis.com",
     "serviceusage.googleapis.com",
+    "servicenetworking.googleapis.com",
+    "sqladmin.googleapis.com",
     "storage-api.googleapis.com",
     "storage.googleapis.com",
-    "workflows.googleapis.com",
+    "vpcaccess.googleapis.com",
   ]
+}
+
+resource "random_id" "id" {
+  byte_length = 4
 }
