@@ -23,3 +23,5 @@ credentials.json
 # BIN
 .venv/bin/*
 .venv/lib/*
+
+scratch.txt
