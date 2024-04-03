@@ -7,12 +7,12 @@ credentials.json
 
 # Python
 *.pyc
-*.txt
+#*.txt
 !*requirements.txt
 !*requirements-test.txt
 *.exe
 *.cfg
-*.sh
+#*.sh
 
 # OSX leaves these everywhere on SMB shares
 ._*
