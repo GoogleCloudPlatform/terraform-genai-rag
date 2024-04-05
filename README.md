@@ -5,7 +5,7 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| deletion\_protection | Whether or not to protect Cloud SQL resources from deletion when solution is modified or changed. | `string` | `true` | no |
+| deletion\_protection | Whether or not to protect Cloud SQL resources from deletion when solution is modified or changed. | `string` | `false` | no |
 | enable\_apis | Whether or not to enable underlying apis in this solution. . | `string` | `true` | no |
 | frontend\_container | The public Artifact Registry URI for the frontend container | `string` | `"us-docker.pkg.dev/google-samples/containers/jss/rag-frontend-service:v0.0.1"` | no |
 | labels | A map of labels to apply to contained resources. | `map(string)` | <pre>{<br>  "genai-rag": true<br>}</pre> | no |
