@@ -19,6 +19,8 @@ resource "google_compute_network" "main" {
   name                    = "genai-rag-private-network"
   auto_create_subnetworks = true
   project                 = module.project-services.project_id
+
+  depends_on = [time_sleep.ip_deallocation]
 }
 
 resource "google_compute_global_address" "main" {
@@ -83,4 +85,12 @@ resource "google_sql_user" "service" {
   type            = "BUILT_IN"
   password        = random_password.cloud_sql_password.result
   deletion_policy = "ABANDON"
+}
+
+# Destroy timer to wait for IP de-allocation
+resource "time_sleep" "ip_deallocation" {
+  destroy_duration = "180s"
+  depends_on = [
+    google_service_networking_connection.main
+  ]
 }
