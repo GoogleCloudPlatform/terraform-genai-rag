@@ -57,7 +57,7 @@ resource "google_cloud_run_v2_service" "retrieval_service" {
     containers {
       image = var.retrieval_container
       volume_mounts {
-        name = "cloudsql"
+        name       = "cloudsql"
         mount_path = "/cloudsql"
       }
       env {
@@ -104,7 +104,7 @@ resource "google_cloud_run_v2_service" "retrieval_service" {
     }
 
     vpc_access {
-      egress    = "PRIVATE_RANGES_ONLY"
+      egress = "PRIVATE_RANGES_ONLY"
       network_interfaces {
         network = google_compute_network.main.id
       }
