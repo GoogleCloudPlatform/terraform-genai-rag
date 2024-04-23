@@ -110,6 +110,10 @@ resource "google_cloud_run_v2_service" "retrieval_service" {
       }
     }
   }
+
+  depends_on = [
+    google_service_networking_connection.main
+  ]
 }
 
 # Deploys a service to be used for the frontend
