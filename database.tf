@@ -36,7 +36,7 @@ resource "google_service_networking_connection" "main" {
   network                 = google_compute_network.main.self_link
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.main.name]
-  deletion_policy         = "ABANDON"
+  # deletion_policy         = "ABANDON"
 }
 
 # Handle Database
@@ -87,10 +87,10 @@ resource "google_sql_user" "service" {
   deletion_policy = "ABANDON"
 }
 
-# Destroy timer to wait for IP de-allocation
-resource "time_sleep" "ip_deallocation" {
-  destroy_duration = "180s"
-  depends_on = [
-    google_service_networking_connection.main
-  ]
-}
+# # Destroy timer to wait for IP de-allocation
+# resource "time_sleep" "ip_deallocation" {
+#   destroy_duration = "480s"
+#   depends_on = [
+#     google_service_networking_connection.main
+#   ]
+# }
