@@ -30,6 +30,13 @@ resource "google_compute_global_address" "main" {
   project       = module.project-services.project_id
 }
 
+resource "google_service_networking_connection" "main" {
+  network                 = google_compute_network.main.self_link
+  service                 = "servicenetworking.googleapis.com"
+  reserved_peering_ranges = [google_compute_global_address.main.name]
+  deletion_policy         = "ABANDON"
+}
+
 # Handle Database
 resource "google_sql_database_instance" "main" {
   name             = "genai-rag-db-${random_id.id.hex}"
@@ -54,6 +61,10 @@ resource "google_sql_database_instance" "main" {
     }
   }
   deletion_protection = var.deletion_protection
+
+  depends_on = [
+    google_service_networking_connection.main,
+  ]
 }
 
 # # Create Database
