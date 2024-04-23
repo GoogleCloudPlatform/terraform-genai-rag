@@ -44,7 +44,7 @@ resource "google_service_networking_connection" "main" {
   network                 = google_compute_network.main.self_link
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.main.name]
-  # deletion_policy         = "ABANDON"
+  deletion_policy         = "ABANDON"
 
   # depends_on = [ time_sleep.ip_deallocation ]
 }

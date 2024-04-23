@@ -27,6 +27,7 @@ var retryErrors = map[string]string{
 	".*does not have enough resources available to fulfill the request.  Try a different zone,.*": "Compute zone resources currently unavailable.",
 	".*Error 400: The subnetwork resource*":                                                       "Subnet is eventually drained",
 	".*Error waiting for Delete Service Networking Connection: Error code 9*":                     "Service connections are eventually dropped",
+	".*Error: Error waiting for Deleting Network: The subnetwork resource*":                       "Subnet is eventually drained",
 }
 
 func TestSimpleExample(t *testing.T) {
