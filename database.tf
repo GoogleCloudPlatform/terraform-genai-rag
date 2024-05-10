@@ -22,15 +22,6 @@ resource "google_compute_network" "main" {
 
 }
 
-resource "google_compute_global_address" "main" {
-  name          = "genai-rag-vpc-address"
-  purpose       = "VPC_PEERING"
-  address_type  = "INTERNAL"
-  prefix_length = 16
-  network       = google_compute_network.main.name
-  project       = module.project-services.project_id
-}
-
 # Handle Database
 resource "google_sql_database_instance" "main" {
   name             = "genai-rag-db-${random_id.id.hex}"
@@ -46,7 +37,7 @@ resource "google_sql_database_instance" "main" {
     disk_type             = "PD_SSD"
     user_labels           = var.labels
     ip_configuration {
-      ipv4_enabled    = true
+      ipv4_enabled = true
     }
     database_flags {
       name  = "cloudsql.iam_authentication"
