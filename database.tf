@@ -47,8 +47,8 @@ resource "google_sql_database_instance" "main" {
     disk_type             = "PD_SSD"
     user_labels           = var.labels
     ip_configuration {
-      ipv4_enabled    = false
-      private_network = "projects/${module.project-services.project_id}/global/networks/${google_compute_network.main.name}"
+      ipv4_enabled    = true
+      # private_network = "projects/${module.project-services.project_id}/global/networks/${google_compute_network.main.name}"
     }
     database_flags {
       name  = "cloudsql.iam_authentication"
