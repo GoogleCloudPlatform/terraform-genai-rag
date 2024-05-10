@@ -33,11 +33,9 @@ module "project-services" {
     "run.googleapis.com",
     "secretmanager.googleapis.com",
     "serviceusage.googleapis.com",
-    "servicenetworking.googleapis.com",
     "sqladmin.googleapis.com",
     "storage-api.googleapis.com",
     "storage.googleapis.com",
-    "vpcaccess.googleapis.com",
   ]
 }
 

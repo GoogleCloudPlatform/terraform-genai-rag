@@ -64,8 +64,6 @@ class Client(datastore.Client[Config]):
                     user=f"{config.user}",
                     password=f"{config.password}",
                     db=f"{config.database}",
-                    # enable_iam_auth=True,
-                    ip_type=IPTypes.PUBLIC,
                 )
             await conn.execute('CREATE EXTENSION IF NOT EXISTS google_ml_integration')
             await conn.execute('CREATE EXTENSION IF NOT EXISTS vector')

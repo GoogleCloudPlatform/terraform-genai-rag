@@ -20,7 +20,6 @@ resource "google_compute_network" "main" {
   auto_create_subnetworks = true
   project                 = module.project-services.project_id
 
-  # depends_on = [time_sleep.ip_deallocation]
 }
 
 resource "google_compute_global_address" "main" {
@@ -48,7 +47,6 @@ resource "google_sql_database_instance" "main" {
     user_labels           = var.labels
     ip_configuration {
       ipv4_enabled    = true
-      # private_network = "projects/${module.project-services.project_id}/global/networks/${google_compute_network.main.name}"
     }
     database_flags {
       name  = "cloudsql.iam_authentication"
@@ -61,9 +59,6 @@ resource "google_sql_database_instance" "main" {
   }
   deletion_protection = var.deletion_protection
 
-  # depends_on = [
-  #   google_service_networking_connection.main,
-  # ]
 }
 
 # # Create Database
