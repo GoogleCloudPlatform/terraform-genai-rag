@@ -71,6 +71,10 @@ resource "google_sql_database_instance" "main" {
       name  = "cloudsql.iam_authentication"
       value = "on"
     }
+    database_flags {
+      name  = "cloudsql.enable_google_ml_integration"
+      value = "on"
+    }
   }
   deletion_protection = var.deletion_protection
 
@@ -95,4 +99,11 @@ resource "google_sql_user" "service" {
   type            = "BUILT_IN"
   password        = random_password.cloud_sql_password.result
   deletion_policy = "ABANDON"
+}
+
+# # Create SQL integration to vertex
+resource "google_iam_policy_binding" "vertex_integration" {
+  project = module.project-services.project_id
+  role    = "roles/aiplatform.user"
+  member  = "serviceAccount:${google_sql_database_instance.main.service_account_email}"
 }
