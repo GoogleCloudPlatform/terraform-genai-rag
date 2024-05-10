@@ -32,23 +32,6 @@ resource "google_compute_global_address" "main" {
   project       = module.project-services.project_id
 }
 
-# # Destroy timer to wait for IP de-allocation
-# resource "time_sleep" "ip_deallocation" {
-#   destroy_duration = "480s"
-#   depends_on = [
-#     google_service_networking_connection.main
-#   ]
-# }
-
-resource "google_service_networking_connection" "main" {
-  network                 = google_compute_network.main.self_link
-  service                 = "servicenetworking.googleapis.com"
-  reserved_peering_ranges = [google_compute_global_address.main.name]
-  deletion_policy         = "ABANDON"
-
-  # depends_on = [ time_sleep.ip_deallocation ]
-}
-
 # Handle Database
 resource "google_sql_database_instance" "main" {
   name             = "genai-rag-db-${random_id.id.hex}"
@@ -78,9 +61,9 @@ resource "google_sql_database_instance" "main" {
   }
   deletion_protection = var.deletion_protection
 
-  depends_on = [
-    google_service_networking_connection.main,
-  ]
+  # depends_on = [
+  #   google_service_networking_connection.main,
+  # ]
 }
 
 # # Create Database
@@ -102,8 +85,8 @@ resource "google_sql_user" "service" {
 }
 
 # # Create SQL integration to vertex
-resource "google_iam_policy_binding" "vertex_integration" {
+resource "google_project_iam_member" "vertex_integration" {
   project = module.project-services.project_id
   role    = "roles/aiplatform.user"
-  member  = "serviceAccount:${google_sql_database_instance.main.service_account_email}"
+  member  = "serviceAccount:${google_sql_database_instance.main.service_account_email_address}"
 }
