@@ -11,7 +11,7 @@
 | labels | A map of labels to apply to contained resources. | `map(string)` | <pre>{<br>  "genai-rag": true<br>}</pre> | no |
 | project\_id | Google Cloud Project ID | `string` | n/a | yes |
 | region | Google Cloud Region | `string` | `"us-central1"` | no |
-| retrieval\_container | The public Artifact Registry URI for the retrieval container | `string` | `"us-docker.pkg.dev/google-samples/containers/jss/rag-retrieval-service:v0.0.1"` | no |
+| retrieval\_container | The public Artifact Registry URI for the retrieval container | `string` | `"us-docker.pkg.dev/google-samples/containers/jss/rag-retrieval-service:v0.0.2"` | no |
 
 ## Outputs
 
