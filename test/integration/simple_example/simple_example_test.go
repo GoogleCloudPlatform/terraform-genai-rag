@@ -27,10 +27,11 @@ var retryErrors = map[string]string{
 	".*does not have enough resources available to fulfill the request.  Try a different zone,.*": "Compute zone resources currently unavailable.",
 	".*Error 400: The subnetwork resource*":                                                       "Subnet is eventually drained",
 	".*Error waiting for Delete Service Networking Connection: Error code 9*":                     "Service connections are eventually dropped",
+	".*Error: Error waiting for Deleting Network: The subnetwork resource*":                       "Subnet is eventually drained, Serverless can take up to 2 hours to release",
 }
 
 func TestSimpleExample(t *testing.T) {
-	dwh := tft.NewTFBlueprintTest(t, tft.WithRetryableTerraformErrors(retryErrors, 60, time.Minute))
+	dwh := tft.NewTFBlueprintTest(t, tft.WithRetryableTerraformErrors(retryErrors, 120, time.Minute))
 
 	dwh.DefineVerify(func(assert *assert.Assertions) {
 		dwh.DefaultVerify(assert)

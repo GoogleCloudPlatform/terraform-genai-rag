@@ -71,7 +71,7 @@ docker_test_integration:
 docker_test_lint:
 	docker run --rm -it \
 		-e ENABLE_BPMETADATA \
-		-e EXCLUDE_LINT_DIRS="\./src/frontend_service/*|\./src/retrieval_service" \
+		-e EXCLUDE_LINT_DIRS="\./src/frontend_service/*|\./src/retrieval_service/*" \
 		-v "$(CURDIR)":/workspace \
 		$(REGISTRY_URL)/${DOCKER_IMAGE_DEVELOPER_TOOLS}:${DOCKER_TAG_VERSION_DEVELOPER_TOOLS} \
 		/usr/local/bin/test_lint.sh

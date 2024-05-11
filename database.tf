@@ -16,34 +16,10 @@
 
 
 resource "google_compute_network" "main" {
-  name                    = "genai-rag-private-network"
+  name                    = "genai-rag-private-network-${random_id.id.hex}"
   auto_create_subnetworks = true
   project                 = module.project-services.project_id
-}
 
-resource "google_compute_global_address" "main" {
-  name          = "genai-rag-vpc-address"
-  purpose       = "VPC_PEERING"
-  address_type  = "INTERNAL"
-  prefix_length = 16
-  network       = google_compute_network.main.name
-  project       = module.project-services.project_id
-}
-
-resource "google_service_networking_connection" "main" {
-  network                 = google_compute_network.main.self_link
-  service                 = "servicenetworking.googleapis.com"
-  reserved_peering_ranges = [google_compute_global_address.main.name]
-  deletion_policy         = "ABANDON"
-}
-
-resource "google_vpc_access_connector" "main" {
-  project        = module.project-services.project_id
-  name           = "genai-rag-vpc-cx"
-  ip_cidr_range  = "10.8.0.0/28"
-  network        = google_compute_network.main.name
-  region         = var.region
-  max_throughput = 300
 }
 
 # Handle Database
@@ -61,19 +37,19 @@ resource "google_sql_database_instance" "main" {
     disk_type             = "PD_SSD"
     user_labels           = var.labels
     ip_configuration {
-      ipv4_enabled    = false
-      private_network = "projects/${module.project-services.project_id}/global/networks/${google_compute_network.main.name}"
+      ipv4_enabled = true
     }
     database_flags {
       name  = "cloudsql.iam_authentication"
       value = "on"
     }
+    database_flags {
+      name  = "cloudsql.enable_google_ml_integration"
+      value = "on"
+    }
   }
   deletion_protection = var.deletion_protection
 
-  depends_on = [
-    google_service_networking_connection.main,
-  ]
 }
 
 # # Create Database
@@ -92,4 +68,11 @@ resource "google_sql_user" "service" {
   type            = "BUILT_IN"
   password        = random_password.cloud_sql_password.result
   deletion_policy = "ABANDON"
+}
+
+# # Create SQL integration to vertex
+resource "google_project_iam_member" "vertex_integration" {
+  project = module.project-services.project_id
+  role    = "roles/aiplatform.user"
+  member  = "serviceAccount:${google_sql_database_instance.main.service_account_email_address}"
 }

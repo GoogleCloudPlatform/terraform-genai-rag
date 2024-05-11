@@ -64,9 +64,8 @@ class Client(datastore.Client[Config]):
                     user=f"{config.user}",
                     password=f"{config.password}",
                     db=f"{config.database}",
-                    # enable_iam_auth=True,
-                    ip_type=IPTypes.PRIVATE,
                 )
+            await conn.execute('CREATE EXTENSION IF NOT EXISTS google_ml_integration')
             await conn.execute('CREATE EXTENSION IF NOT EXISTS vector')
             await register_vector(conn)
             return conn
@@ -119,6 +118,7 @@ class Client(datastore.Client[Config]):
                 ],
             )
 
+            await conn.execute(text("CREATE EXTENSION IF NOT EXISTS google_ml_integration"))
             await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
             # If the table already exists, drop it to avoid conflicts
             await conn.execute(text("DROP TABLE IF EXISTS amenities CASCADE"))

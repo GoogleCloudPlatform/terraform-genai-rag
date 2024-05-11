@@ -57,5 +57,5 @@ variable "frontend_container" {
 variable "retrieval_container" {
   type        = string
   description = "The public Artifact Registry URI for the retrieval container"
-  default     = "us-docker.pkg.dev/google-samples/containers/jss/rag-retrieval-service:v0.0.1"
+  default     = "us-docker.pkg.dev/google-samples/containers/jss/rag-retrieval-service:v0.0.2"
 }

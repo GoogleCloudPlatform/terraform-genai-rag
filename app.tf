@@ -17,7 +17,7 @@
 # Creates the Service Account to be used by Cloud Run
 resource "google_service_account" "runsa" {
   project      = module.project-services.project_id
-  account_id   = "genai-rag-run-sa"
+  account_id   = "genai-rag-run-sa-${random_id.id.hex}"
   display_name = "Service Account for Cloud Run"
 
 }
@@ -39,7 +39,7 @@ resource "google_project_iam_member" "allrun" {
 
 # Deploys a service to be used for the database
 resource "google_cloud_run_v2_service" "retrieval_service" {
-  name     = "retrieval-service"
+  name     = "retrieval-service-${random_id.id.hex}"
   location = var.region
   project  = module.project-services.project_id
 
@@ -47,8 +47,19 @@ resource "google_cloud_run_v2_service" "retrieval_service" {
     service_account = google_service_account.runsa.email
     labels          = var.labels
 
+    volumes {
+      name = "cloudsql"
+      cloud_sql_instance {
+        instances = [google_sql_database_instance.main.connection_name]
+      }
+    }
+
     containers {
       image = var.retrieval_container
+      volume_mounts {
+        name       = "cloudsql"
+        mount_path = "/cloudsql"
+      }
       env {
         name  = "APP_HOST"
         value = "0.0.0.0"
@@ -93,15 +104,17 @@ resource "google_cloud_run_v2_service" "retrieval_service" {
     }
 
     vpc_access {
-      connector = google_vpc_access_connector.main.id
-      egress    = "ALL_TRAFFIC"
+      egress = "PRIVATE_RANGES_ONLY"
+      network_interfaces {
+        network = google_compute_network.main.id
+      }
     }
   }
 }
 
 # Deploys a service to be used for the frontend
 resource "google_cloud_run_v2_service" "frontend_service" {
-  name     = "frontend-service"
+  name     = "frontend-service-${random_id.id.hex}"
   location = var.region
   project  = module.project-services.project_id
 
@@ -147,6 +160,7 @@ data "google_service_account_id_token" "oidc" {
 }
 
 # # Trigger the database init step from the retrieval service
+# # Manual Run: curl -H "Authorization: Bearer $(gcloud auth print-identity-token)" {run_service}/data/import
 
 # tflint-ignore: terraform_unused_declarations
 data "http" "database_init" {
