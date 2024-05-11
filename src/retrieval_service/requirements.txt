@@ -1,6 +1,6 @@
 asyncpg==0.29.0
 fastapi==0.111.0
-google-cloud-firestore==2.14.0
+google-cloud-firestore==2.16.0
 google-cloud-aiplatform==1.41.0
 langchain==0.1.17
 pgvector==0.2.5
