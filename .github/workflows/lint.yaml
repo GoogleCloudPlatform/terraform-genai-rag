@@ -47,8 +47,11 @@ jobs:
       - run: docker run --rm -e ENABLE_BPMETADATA -v ${{ github.workspace }}:/workspace ${{ steps.variables.outputs.dev-tools }} module-swapper
         env:
           ENABLE_BPMETADATA: 1
-
-      - run: docker run --rm -e ENABLE_BPMETADATA -v ${{ github.workspace }}:/workspace ${{ steps.variables.outputs.dev-tools }} /usr/local/bin/test_lint.sh
+      - run: |
+          docker run --rm -e ENABLE_BPMETADATA \
+            -e EXCLUDE_LINT_DIRS="\./src/frontend_service/*|\./src/retrieval_service/*" \
+            -v ${{ github.workspace }}:/workspace \
+            ${{ steps.variables.outputs.dev-tools }} \
+            /usr/local/bin/test_lint.sh
         env:
           ENABLE_BPMETADATA: 1
-

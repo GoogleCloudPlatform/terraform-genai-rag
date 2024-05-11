@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-output "workflow_return_project_setup" {
-  description = "Output of the project setup workflow"
-  value       = data.http.call_workflows_initial_project_setup.response_body
+
+output "deployment_ip_address" {
+  description = "Web URL link"
+  value       = google_cloud_run_v2_service.frontend_service.uri
 }
