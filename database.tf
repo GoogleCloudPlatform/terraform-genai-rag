@@ -15,13 +15,6 @@
  */
 
 
-# resource "google_compute_network" "main" {
-#   name                    = "genai-rag-private-network-${random_id.id.hex}"
-#   auto_create_subnetworks = true
-#   project                 = module.project-services.project_id
-
-# }
-
 # Handle Database
 resource "google_sql_database_instance" "main" {
   name             = "genai-rag-db-${random_id.id.hex}"

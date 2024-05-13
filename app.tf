@@ -103,12 +103,6 @@ resource "google_cloud_run_v2_service" "retrieval_service" {
       }
     }
 
-    # vpc_access {
-    #   egress = "PRIVATE_RANGES_ONLY"
-    #   network_interfaces {
-    #     network = google_compute_network.main.id
-    #   }
-    # }
   }
 }
 
