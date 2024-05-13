@@ -30,12 +30,13 @@ resource "google_sql_database_instance" "main" {
   project          = module.project-services.project_id
 
   settings {
-    tier                  = "db-g1-small"
-    disk_autoresize       = true
-    disk_autoresize_limit = 0
-    disk_size             = 10
-    disk_type             = "PD_SSD"
-    user_labels           = var.labels
+    tier                         = "db-standard-1"
+    disk_autoresize              = true
+    disk_autoresize_limit        = 0
+    disk_size                    = 10
+    disk_type                    = "PD_SSD"
+    user_labels                  = var.labels
+    enable_google_ml_integration = true
     ip_configuration {
       ipv4_enabled = true
     }
