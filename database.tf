@@ -30,7 +30,7 @@ resource "google_sql_database_instance" "main" {
   project          = module.project-services.project_id
 
   settings {
-    tier                         = "db-standard-1"
+    tier                         = "db-n1-standard-1"
     disk_autoresize              = true
     disk_autoresize_limit        = 0
     disk_size                    = 10
