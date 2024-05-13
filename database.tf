@@ -15,13 +15,6 @@
  */
 
 
-resource "google_compute_network" "main" {
-  name                    = "genai-rag-private-network-${random_id.id.hex}"
-  auto_create_subnetworks = true
-  project                 = module.project-services.project_id
-
-}
-
 # Handle Database
 resource "google_sql_database_instance" "main" {
   name             = "genai-rag-db-${random_id.id.hex}"
@@ -30,12 +23,13 @@ resource "google_sql_database_instance" "main" {
   project          = module.project-services.project_id
 
   settings {
-    tier                  = "db-g1-small"
-    disk_autoresize       = true
-    disk_autoresize_limit = 0
-    disk_size             = 10
-    disk_type             = "PD_SSD"
-    user_labels           = var.labels
+    tier                         = "db-custom-1-3840" # 1 CPU, 3.75GB Memory
+    disk_autoresize              = true
+    disk_autoresize_limit        = 0
+    disk_size                    = 10
+    disk_type                    = "PD_SSD"
+    user_labels                  = var.labels
+    enable_google_ml_integration = true
     ip_configuration {
       ipv4_enabled = true
     }
