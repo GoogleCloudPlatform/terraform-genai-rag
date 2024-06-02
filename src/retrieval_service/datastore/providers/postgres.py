@@ -15,7 +15,7 @@
 import asyncio
 from datetime import datetime
 from ipaddress import IPv4Address, IPv6Address
-from typing import Literal, Optional
+from typing import Literal, Optional, Union
 
 import asyncpg
 from pgvector.asyncpg import register_vector
@@ -30,7 +30,7 @@ POSTGRES_IDENTIFIER = "postgres"
 
 class Config(BaseModel, datastore.AbstractConfig):
     kind: Literal["postgres"]
-    host: IPv4Address | IPv6Address = IPv4Address("127.0.0.1")
+    host: Union[IPv4Address, IPv6Address] = IPv4Address("127.0.0.1")
     port: int = 5432
     user: str
     password: str
