@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: App unit tests
+name: app
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8","3.11"]
+        python-version: ["3.9","3.11"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -44,7 +44,11 @@ jobs:
           cache: 'pip'
       - run: pip install -r src/frontend_service/requirements.txt
       - run: pip install -r src/frontend_service/requirements-test.txt
-      - run: pytest src/frontend_service
+      - name: frontend tests
+        working-directory: src/frontend_service
+        run: pytest
       - run: pip install -r src/retrieval_service/requirements.txt
       - run: pip install -r src/retrieval_service/requirements-test.txt
-      - run: pytest src/retrieval_service/app
+      - name: retrieval tests
+        working-directory: src/retrieval_service
+        run: pytest
