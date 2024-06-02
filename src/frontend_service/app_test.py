@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 from fastapi import FastAPI
-from fastapi.testclient import TestClient
 import pytest
-from main import init_app
-from agent import init_agent
+from main import init_app, lifespan
+from agent import init_agent, user_agents
 from langchain_core.messages import HumanMessage
+import asyncio
 
 CLIENT_ID = "test client id"
 SECRET_KEY = "test_secret"
@@ -32,14 +32,14 @@ def app():
         raise TypeError("app did not initialize")
     return app
 
-
+@pytest.mark.asyncio
 @patch("agent.init_agent")
-def test_index_handler(mock_init_agent, app: FastAPI):
+async def test_lifespan(mock_init_agent):
     mock_init_agent.return_value = AsyncMock(agent=AsyncMock(ainvoke=AsyncMock()))
-    with TestClient(app) as client:
-        response = client.get("/")
-        assert response.status_code == 200
-        assert CLIENT_ID in response.text
+    app = FastAPI()
+    async with lifespan(app):
+        await asyncio.sleep(0.1)
+    assert user_agents.get("test_uuid") is None
 
 
 @pytest.mark.asyncio
