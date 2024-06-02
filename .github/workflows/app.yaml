@@ -39,9 +39,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-        cache: 'pip'
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
       - run: pip install -r src/frontend_service/requirements.txt
       - run: pip install -r src/frontend_service/requirements-test.txt
       - run: pytest src/frontend_service
