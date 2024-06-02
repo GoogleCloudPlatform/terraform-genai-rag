@@ -19,13 +19,15 @@ on:
     branches:
       - main
     paths:
-      - 'api/**'
+      - 'src/frontend_service/**'
+      - 'src/retrieval_service/app/**'
       - '.github/workflows/app.yaml'
   pull_request:
     branches:
       - main
     paths:
-      - 'api/**'
+      - 'src/frontend_service/**'
+      - 'src/retrieval_service/app/**'
       - '.github/workflows/app.yaml'
 
 jobs:
