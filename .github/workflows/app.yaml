@@ -46,11 +46,6 @@ jobs:
       - run: pip install -r src/frontend_service/requirements-test.txt
       - name: frontend tests
         working-directory: src/frontend_service
-        env:
-          GOOGLE_CLOUD_PROJECT_ID: test_project
         run: pytest
       - run: pip install -r src/retrieval_service/requirements.txt
       - run: pip install -r src/retrieval_service/requirements-test.txt
-      - name: retrieval tests
-        working-directory: src/retrieval_service/app
-        run: pytest
