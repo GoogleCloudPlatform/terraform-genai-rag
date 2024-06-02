@@ -14,9 +14,8 @@
 
 from contextlib import asynccontextmanager
 from ipaddress import IPv4Address, IPv6Address
-from typing import Optional
+from typing import Optional, Union
 
-import yaml
 import os
 from fastapi import FastAPI
 from langchain.embeddings import VertexAIEmbeddings
@@ -30,7 +29,7 @@ EMBEDDING_MODEL_NAME = "textembedding-gecko@001"
 
 
 class AppConfig(BaseModel):
-    host: IPv4Address | IPv6Address = IPv4Address("127.0.0.1")
+    host: Union[IPv4Address, IPv6Address] = IPv4Address("127.0.0.1")
     port: int = 8080
     datastore: datastore.Config
     clientId: Optional[str] = None
