@@ -60,7 +60,8 @@ async def get_connector():
 
 async def handle_error_response(response):
     if response.status != 200:
-        return f"Error sending {response.method} request to {str(response.url)}): {await response.text()}"
+        return (f"Error sending {response.method} request "
+                f" to {str(response.url)}): {await response.text()}")
 
 
 async def create_client_session() -> aiohttp.ClientSession:
@@ -96,14 +97,18 @@ async def init_agent(history: list[messages.BaseMessage]) -> UserAgent:
         return_intermediate_steps=True,
     )
     # Create new prompt template
-    tool_strings = "\n".join([f"> {tool.name}: {tool.description}" for tool in tools])
+    tool_strings = "\n".join(
+        [f"> {tool.name}: {tool.description}" for tool in tools]
+    )
     tool_names = ", ".join([tool.name for tool in tools])
     format_instructions = FORMAT_INSTRUCTIONS.format(
         tool_names=tool_names,
     )
     today_date = date.today().strftime("%Y-%m-%d")
     today = f"Today is {today_date}."
-    template = "\n\n".join([PREFIX, tool_strings, format_instructions, SUFFIX, today])
+    template = "\n\n".join(
+        [PREFIX, tool_strings, format_instructions, SUFFIX, today]
+    )
     human_message_template = "{input}\n\n{agent_scratchpad}"
     prompt = ChatPromptTemplate.from_messages(
         [("system", template), ("human", human_message_template)]
@@ -113,23 +118,27 @@ async def init_agent(history: list[messages.BaseMessage]) -> UserAgent:
     return UserAgent(client, agent)
 
 
-PREFIX = """SFO Airport Assistant helps travelers find their way at the airport.
+PREFIX = """SFO Airport Assistant helps travelers find their way at the
+airport.
 
-Assistant is designed to be able to assist with a wide range of tasks, from answering simple questions to
-complex multi-query questions that require passing results from one query to another. As a language model, Assistant is
-able to generate human-like text based on the input it receives, allowing it to engage in natural-sounding
-conversations and provide responses that are coherent and relevant to the topic at hand.
+Assistant is designed to be able to assist with a wide range of tasks, from
+answering simple questions to complex multi-query questions that require
+passing results from one query to another. As a language model, Assistant is
+able to generate human-like text based on the input it receives, allowing it to
+engage in natural-sounding conversations and provide responses that are
+coherent and relevant to the topic at hand.
 
-Overall, Assistant is a powerful tool that can help answer a wide range of questions pertaining to the San
-Francisco Airport. SFO Airport Assistant is here to assist. It currently does not have access to user info.
+Overall, Assistant is a powerful tool that can help answer a wide range of
+questions pertaining to the San Francisco Airport. SFO Airport Assistant is
+here to assist. It currently does not have access to user info.
 
 TOOLS:
 ------
 
 Assistant has access to the following tools:"""
 
-FORMAT_INSTRUCTIONS = """Use a json blob to specify a tool by providing an action key (tool name)
-and an action_input key (tool input).
+FORMAT_INSTRUCTIONS = """Use a json blob to specify a tool by providing an
+action key (tool name) and an action_input key (tool input).
 
 Valid "action" values: "Final Answer" or {tool_names}
 
@@ -162,7 +171,8 @@ Action:
 ```"""
 
 SUFFIX = """Begin! Use tools if necessary. Respond directly if appropriate.
-If using a tool, reminder to ALWAYS respond with a valid json blob of a single action.
+If using a tool, reminder to ALWAYS respond with a valid json blob of a
+single action.
 Format is Action:```$JSON_BLOB```then Observation:.
 Thought:
 

@@ -16,7 +16,6 @@ from contextlib import asynccontextmanager
 from ipaddress import IPv4Address, IPv6Address
 from typing import Optional
 
-import yaml
 import os
 from fastapi import FastAPI
 from langchain.embeddings import VertexAIEmbeddings
@@ -41,11 +40,17 @@ def parse_config() -> AppConfig:
     config["host"] = os.environ.get("APP_HOST", "127.0.0.1")
     config["port"] = os.environ.get("APP_PORT", 8080)
     config["datastore"] = {}
-    config["datastore"]["kind"] = os.environ.get("DB_KIND", "cloudsql-postgres")
+    config["datastore"]["kind"] = os.environ.get(
+        "DB_KIND", "cloudsql-postgres"
+    )
     config["datastore"]["project"] = os.environ.get("DB_PROJECT", "my-project")
     config["datastore"]["region"] = os.environ.get("DB_REGION", "us-central1")
-    config["datastore"]["instance"] = os.environ.get("DB_INSTANCE", "my-instance")
-    config["datastore"]["database"] = os.environ.get("DB_NAME", "assistantdemo")
+    config["datastore"]["instance"] = os.environ.get(
+        "DB_INSTANCE", "my-instance"
+    )
+    config["datastore"]["database"] = os.environ.get(
+        "DB_NAME", "assistantdemo"
+    )
     config["datastore"]["user"] = os.environ.get("DB_USER", "postgres")
     config["datastore"]["password"] = os.environ.get("DB_PASSWORD", "password")
     return AppConfig(**config)
@@ -55,7 +60,9 @@ def parse_config() -> AppConfig:
 def gen_init(cfg: AppConfig):
     async def initialize_datastore(app: FastAPI):
         app.state.datastore = await datastore.create(cfg.datastore)
-        app.state.embed_service = VertexAIEmbeddings(model_name=EMBEDDING_MODEL_NAME)
+        app.state.embed_service = VertexAIEmbeddings(
+            model_name=EMBEDDING_MODEL_NAME
+        )
         yield
         await app.state.datastore.close()
 

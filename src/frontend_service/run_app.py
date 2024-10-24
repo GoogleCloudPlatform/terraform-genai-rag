@@ -29,7 +29,9 @@ async def main():
     app = init_app(client_id=CLIENT_ID, secret_key=SECRET_KEY)
     if app is None:
         raise TypeError("app not instantiated")
-    server = uvicorn.Server(uvicorn.Config(app, host=HOST, port=PORT, log_level="info"))
+    server = uvicorn.Server(
+        uvicorn.Config(app, host=HOST, port=PORT, log_level="info")
+    )
     await server.serve()
 
 

@@ -14,11 +14,10 @@
 
 import asyncio
 from datetime import datetime
-from typing import Any, Dict, Literal, Optional
+from typing import Literal, Optional
 
 import asyncpg
-import sqlalchemy
-from google.cloud.sql.connector import Connector, IPTypes
+from google.cloud.sql.connector import Connector
 from pgvector.asyncpg import register_vector
 from pydantic import BaseModel
 from sqlalchemy import text
@@ -65,8 +64,10 @@ class Client(datastore.Client[Config]):
                     password=f"{config.password}",
                     db=f"{config.database}",
                 )
-            await conn.execute('CREATE EXTENSION IF NOT EXISTS google_ml_integration')
-            await conn.execute('CREATE EXTENSION IF NOT EXISTS vector')
+            await conn.execute(
+                "CREATE EXTENSION IF NOT EXISTS google_ml_integration"
+            )
+            await conn.execute("CREATE EXTENSION IF NOT EXISTS vector")
             await register_vector(conn)
             return conn
 
@@ -104,7 +105,8 @@ class Client(datastore.Client[Config]):
             # Insert all the data
             await conn.execute(
                 text(
-                    """INSERT INTO airports VALUES (:id, :iata, :name, :city, :country)"""
+                    """INSERT INTO airports VALUES (:id, :iata, :name,
+                    :city, :country)"""
                 ),
                 [
                     {
@@ -118,7 +120,9 @@ class Client(datastore.Client[Config]):
                 ],
             )
 
-            await conn.execute(text("CREATE EXTENSION IF NOT EXISTS google_ml_integration"))
+            await conn.execute(
+                text("CREATE EXTENSION IF NOT EXISTS google_ml_integration")
+            )
             await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
             # If the table already exists, drop it to avoid conflicts
             await conn.execute(text("DROP TABLE IF EXISTS amenities CASCADE"))
@@ -158,12 +162,16 @@ class Client(datastore.Client[Config]):
             await conn.execute(
                 text(
                     """
-                    INSERT INTO amenities VALUES (:id, :name, :description, :location,
-                      :terminal, :category, :hour, :sunday_start_hour, :sunday_end_hour,
-                      :monday_start_hour, :monday_end_hour, :tuesday_start_hour,
-                      :tuesday_end_hour, :wednesday_start_hour, :wednesday_end_hour,
-                      :thursday_start_hour, :thursday_end_hour, :friday_start_hour,
-                      :friday_end_hour, :saturday_start_hour, :saturday_end_hour, :content, :embedding)
+                    INSERT INTO amenities VALUES (:id, :name, :description,
+                    :location,
+                      :terminal, :category, :hour, :sunday_start_hour,
+                      :sunday_end_hour, :monday_start_hour, :monday_end_hour,
+                      :tuesday_start_hour, :tuesday_end_hour,
+                      :wednesday_start_hour, :wednesday_end_hour,
+                      :thursday_start_hour, :thursday_end_hour,
+                      :friday_start_hour, :friday_end_hour,
+                      :saturday_start_hour, :saturday_end_hour, :content,
+                      :embedding)
                     """
                 ),
                 [
@@ -244,7 +252,9 @@ class Client(datastore.Client[Config]):
 
     async def export_data(
         self,
-    ) -> tuple[list[models.Airport], list[models.Amenity], list[models.Flight]]:
+    ) -> tuple[
+        list[models.Airport], list[models.Amenity], list[models.Flight]
+    ]:
         async with self.__pool.connect() as conn:
             airport_task = asyncio.create_task(
                 conn.execute(text("""SELECT * FROM airports"""))
@@ -261,9 +271,15 @@ class Client(datastore.Client[Config]):
             amenity_results = (await amenity_task).mappings().fetchall()
             flights_results = (await flights_task).mappings().fetchall()
 
-            airports = [models.Airport.model_validate(a) for a in airport_results]
-            amenities = [models.Amenity.model_validate(a) for a in amenity_results]
-            flights = [models.Flight.model_validate(f) for f in flights_results]
+            airports = [
+                models.Airport.model_validate(a) for a in airport_results
+            ]
+            amenities = [
+                models.Amenity.model_validate(a) for a in amenity_results
+            ]
+            flights = [
+                models.Flight.model_validate(f) for f in flights_results
+            ]
             return airports, amenities, flights
 
     async def get_airport_by_id(self, id: int) -> Optional[models.Airport]:
@@ -300,9 +316,10 @@ class Client(datastore.Client[Config]):
             s = text(
                 """
                 SELECT * FROM airports
-                  WHERE (CAST(:country AS TEXT) IS NULL OR country ILIKE :country)
-                  AND (CAST(:city AS TEXT) IS NULL OR city ILIKE :city)
-                  AND (CAST(:name AS TEXT) IS NULL OR name ILIKE '%' || :name || '%')
+                  WHERE (CAST(:country AS TEXT) IS NULL OR country ILIKE
+                  :country) AND (CAST(:city AS TEXT) IS NULL OR city ILIKE
+                  :city) AND (CAST(:name AS TEXT) IS NULL OR name ILIKE '%' ||
+                  :name || '%')
                 """
             )
             params = {
@@ -319,8 +336,8 @@ class Client(datastore.Client[Config]):
         async with self.__pool.connect() as conn:
             s = text(
                 """
-                SELECT id, name, description, location, terminal, category, hour
-                FROM amenities WHERE id=:id
+                SELECT id, name, description, location, terminal, category,
+                hour FROM amenities WHERE id=:id
                 """
             )
             params = {"id": id}
@@ -333,19 +350,23 @@ class Client(datastore.Client[Config]):
         return res
 
     async def amenities_search(
-        self, query_embedding: list[float], similarity_threshold: float, top_k: int
+        self,
+        query_embedding: list[float],
+        similarity_threshold: float,
+        top_k: int,
     ) -> list[models.Amenity]:
         async with self.__pool.connect() as conn:
             s = text(
                 """
-                SELECT id, name, description, location, terminal, category, hour
+                SELECT id, name, description, location, terminal, category,
+                hour
                   FROM (
-                      SELECT id, name, description, location, terminal, category, hour,
+                      SELECT id, name, description, location, terminal,
+                      category, hour,
                         1 - (embedding <=> :query_embedding) AS similarity
-                      FROM amenities
-                      WHERE 1 - (embedding <=> :query_embedding) > :similarity_threshold
-                      ORDER BY similarity DESC
-                      LIMIT :top_k
+                      FROM amenities WHERE 1 - (embedding <=> :query_embedding)
+                      > :similarity_threshold ORDER BY similarity DESC LIMIT
+                      :top_k
                   ) AS sorted_amenities
                 """
             )
@@ -408,10 +429,13 @@ class Client(datastore.Client[Config]):
             s = text(
                 """
                 SELECT * FROM flights
-                  WHERE (CAST(:departure_airport AS TEXT) IS NULL OR departure_airport ILIKE :departure_airport)
-                  AND (CAST(:arrival_airport AS TEXT) IS NULL OR arrival_airport ILIKE :arrival_airport)
-                  AND departure_time >= CAST(:datetime AS timestamp)
-                  AND departure_time < CAST(:datetime AS timestamp) + interval '1 day'
+                  WHERE (CAST(:departure_airport AS TEXT) IS NULL
+                  OR departure_airport ILIKE :departure_airport)
+                  AND (CAST(:arrival_airport AS TEXT) IS NULL
+                  OR arrival_airport ILIKE :arrival_airport)
+                  AND departure_time >= CAST(:datetime
+                  AS timestamp) AND departure_time < CAST(:datetime AS
+                  timestamp) + interval '1 day'
                 """
             )
             params = {

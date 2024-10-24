@@ -71,7 +71,9 @@ class MockFirestoreClient(firestore.AsyncClient):
         return self.collections[collection_name]
 
 
-async def mock_client(mock_firestore_client: MockFirestoreClient) -> firestore.Client:
+async def get_mock_client(
+    mock_firestore_client: MockFirestoreClient,
+) -> firestore.Client:
     return firestore_provider.Client(mock_firestore_client)
 
 
@@ -91,7 +93,7 @@ async def test_get_airport_by_id():
     mock_firestore_client = MockFirestoreClient()
     mock_firestore_client.collection["airports"] = mock_collection
 
-    mock_client = await mock_client(mock_firestore_client)
+    mock_client = await get_mock_client(mock_firestore_client)
     res = await mock_client.get_airport_by_id(fake_id)
     expected_res = models.Airport(
         id=fake_id,
@@ -120,7 +122,7 @@ async def test_get_airport_by_iata():
     mock_firestore_client = MockFirestoreClient()
     mock_firestore_client.collection["airports"] = mock_collection
 
-    mock_client = await mock_client(mock_firestore_client)
+    mock_client = await get_mock_client(mock_firestore_client)
     res = await mock_client.get_airport_by_iata(fake_iata)
     expected_res = models.Airport(
         id=fake_id,
@@ -151,7 +153,7 @@ async def test_search_airports():
     mock_firestore_client = MockFirestoreClient()
     mock_firestore_client.collection["airports"] = mock_collection
 
-    mock_client = await mock_client(mock_firestore_client)
+    mock_client = await get_mock_client(mock_firestore_client)
     res = await mock_client.search_airports(fake_country, fake_city, fake_name)
     expected_res = [
         models.Airport(
@@ -190,7 +192,7 @@ async def test_get_amenity():
     mock_firestore_client = MockFirestoreClient()
     mock_firestore_client.collection["amenities"] = mock_collection
 
-    mock_client = await mock_client(mock_firestore_client)
+    mock_client = await get_mock_client(mock_firestore_client)
     res = await mock_client.get_amenity(fake_id)
     expected_res = models.Amenity(
         id=fake_id,
@@ -222,7 +224,7 @@ async def test_amenities_search():
     mock_firestore_client = MockFirestoreClient()
     mock_firestore_client.collection["amenities"] = mock_collection
 
-    mock_client = await mock_client(mock_firestore_client)
+    mock_client = await get_mock_client(mock_firestore_client)
     res = await mock_client.amenities_search(1, 0.7, 1)
     expected_res = [
         models.Amenity(
@@ -259,7 +261,7 @@ async def test_get_flight():
     mock_firestore_client = MockFirestoreClient()
     mock_firestore_client.collection["flights"] = mock_collection
 
-    mock_client = await mock_client(mock_firestore_client)
+    mock_client = await get_mock_client(mock_firestore_client)
     res = await mock_client.get_flight(fake_id)
     expected_res = models.Flight(
         id=fake_id,
@@ -297,7 +299,7 @@ async def test_search_flights_by_airports():
     mock_firestore_client = MockFirestoreClient()
     mock_firestore_client.collection["flights"] = mock_collection
 
-    mock_client = await mock_client(mock_firestore_client)
+    mock_client = await get_mock_client(mock_firestore_client)
     res = await mock_client.search_flights_by_airport(
         fake_date, "Fake departure airport", "Fake arrival airport"
     )

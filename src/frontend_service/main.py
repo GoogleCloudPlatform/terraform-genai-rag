@@ -61,7 +61,7 @@ async def lifespan(app: FastAPI):
 async def index(request: Request):
     """Render the default template."""
     # Agent setup
-    agent = await get_agent(request.session, user_id_token=None)
+    await get_agent(request.session, user_id_token=None)
     return templates.TemplateResponse(
         "index.html",
         {
@@ -79,7 +79,9 @@ async def login_google(
     form_data = await request.form()
     user_id_token = form_data.get("credential")
     if user_id_token is None:
-        raise HTTPException(status_code=401, detail="No user credentials found")
+        raise HTTPException(
+            status_code=401, detail="No user credentials found"
+        )
     # create new request session
     _ = await get_agent(request.session, str(user_id_token))
     print("Logged in to Google.")
@@ -97,11 +99,14 @@ async def chat_handler(request: Request, prompt: str = Body(embed=True)):
         raise HTTPException(status_code=400, detail="Error: No user query")
     if "uuid" not in request.session:
         raise HTTPException(
-            status_code=400, detail="Error: Invoke index handler before start chatting"
+            status_code=400,
+            detail="Error: Invoke index handler before start chatting",
         )
 
     # Add user message to chat history
-    request.session["history"].append(message_to_dict(HumanMessage(content=prompt)))
+    request.session["history"].append(
+        message_to_dict(HumanMessage(content=prompt))
+    )
     user_agent = await get_agent(request.session, user_id_token=None)
     try:
         print(prompt)
@@ -113,7 +118,9 @@ async def chat_handler(request: Request, prompt: str = Body(embed=True)):
         )
         return markdown(response["output"])
     except Exception as err:
-        raise HTTPException(status_code=500, detail=f"Error invoking agent: {err}")
+        raise HTTPException(
+            status_code=500, detail=f"Error invoking agent: {err}"
+        )
 
 
 async def get_agent(session: dict[str, Any], user_id_token: Optional[str]):
@@ -124,7 +131,9 @@ async def get_agent(session: dict[str, Any], user_id_token: Optional[str]):
     if "history" not in session:
         session["history"] = messages_to_dict(BASE_HISTORY)
     if id not in user_agents:
-        user_agents[id] = await init_agent(messages_from_dict(session["history"]))
+        user_agents[id] = await init_agent(
+            messages_from_dict(session["history"])
+        )
     user_agent = user_agents[id]
     if user_id_token is not None:
         user_agent.client.headers["User-Id-Token"] = f"Bearer {user_id_token}"
@@ -136,12 +145,12 @@ async def reset(request: Request):
     """Reset agent"""
 
     if "uuid" not in request.session:
-        raise HTTPException(status_code=400, detail=f"No session to reset.")
+        raise HTTPException(status_code=400, detail="No session to reset.")
 
     uuid = request.session["uuid"]
     global user_agents
     if uuid not in user_agents.keys():
-        raise HTTPException(status_code=500, detail=f"Current agent not found")
+        raise HTTPException(status_code=500, detail="Current agent not found")
 
     await user_agents[uuid].client.close()
     del user_agents[uuid]

@@ -12,10 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 from typing import Any, Mapping, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request
 from google.auth.transport import requests  # type:ignore
 from google.oauth2 import id_token  # type:ignore
 from langchain.embeddings.base import Embeddings
@@ -91,7 +90,8 @@ async def search_airports(
     if country is None and city is None and name is None:
         raise HTTPException(
             status_code=422,
-            detail="Request requires at least one query params: country, city, or airport name",
+            detail=("Request requires at least one query params: country, "
+                    " city, or airport name"),
         )
 
     ds: datastore.Client = request.app.state.datastore
@@ -143,7 +143,9 @@ async def search_flights(
     else:
         raise HTTPException(
             status_code=422,
-            detail="Request requires query params: arrival_airport, departure_airport, date, or both airline and flight_number",
+            detail=("Request requires query params: arrival_airport, "
+                    "departure_airport, date, or both airline and "
+                    "flight_number"),
         )
     return flights
 
@@ -192,6 +194,7 @@ async def list_tickets(
     ds: datastore.Client = request.app.state.datastore
     results = await ds.list_tickets(user_info["user_id"])
     return results
+
 
 @routes.get("/data/import")
 async def import_data(

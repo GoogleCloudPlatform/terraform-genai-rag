@@ -184,7 +184,8 @@ class Client(datastore.Client[Config]):
             )
             # Insert all the data
             await conn.executemany(
-                """INSERT INTO flights VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)""",
+                """INSERT INTO flights VALUES ($1, $2, $3, $4, $5, $6, $7, $8,
+                $9)""",
                 [
                     (
                         f.id,
@@ -222,7 +223,9 @@ class Client(datastore.Client[Config]):
 
     async def export_data(
         self,
-    ) -> tuple[list[models.Airport], list[models.Amenity], list[models.Flight]]:
+    ) -> tuple[
+        list[models.Airport], list[models.Amenity], list[models.Flight]
+    ]:
         airport_task = asyncio.create_task(
             self.__pool.fetch("""SELECT * FROM airports ORDER BY id ASC""")
         )
@@ -233,9 +236,15 @@ class Client(datastore.Client[Config]):
             self.__pool.fetch("""SELECT * FROM flights ORDER BY id ASC""")
         )
 
-        airports = [models.Airport.model_validate(dict(a)) for a in await airport_task]
-        amenities = [models.Amenity.model_validate(dict(a)) for a in await amenity_task]
-        flights = [models.Flight.model_validate(dict(f)) for f in await flight_task]
+        airports = [
+            models.Airport.model_validate(dict(a)) for a in await airport_task
+        ]
+        amenities = [
+            models.Amenity.model_validate(dict(a)) for a in await amenity_task
+        ]
+        flights = [
+            models.Flight.model_validate(dict(f)) for f in await flight_task
+        ]
         return airports, amenities, flights
 
     async def get_airport_by_id(self, id: int) -> Optional[models.Airport]:
@@ -304,7 +313,10 @@ class Client(datastore.Client[Config]):
         return result
 
     async def amenities_search(
-        self, query_embedding: list[float], similarity_threshold: float, top_k: int
+        self,
+        query_embedding: list[float],
+        similarity_threshold: float,
+        top_k: int,
     ) -> list[models.Amenity]:
         results = await self.__pool.fetch(
             """
@@ -426,8 +438,12 @@ class Client(datastore.Client[Config]):
         departure_time: str,
         arrival_time: str,
     ):
-        departure_time_datetime = datetime.strptime(departure_time, "%Y-%m-%d %H:%M:%S")
-        arrival_time_datetime = datetime.strptime(arrival_time, "%Y-%m-%d %H:%M:%S")
+        departure_time_datetime = datetime.strptime(
+            departure_time, "%Y-%m-%d %H:%M:%S"
+        )
+        arrival_time_datetime = datetime.strptime(
+            arrival_time, "%Y-%m-%d %H:%M:%S"
+        )
         if not await self.validate_ticket(
             airline,
             flight_number,

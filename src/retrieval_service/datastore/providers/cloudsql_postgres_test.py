@@ -14,8 +14,7 @@
 
 import asyncio
 from datetime import datetime
-from ipaddress import IPv4Address
-from typing import Any, AsyncGenerator, List
+from typing import AsyncGenerator, List
 
 import asyncpg
 import pytest
@@ -60,7 +59,11 @@ def db_instance() -> str:
 
 @pytest.fixture(scope="module")
 async def create_db(
-    db_user: str, db_pass: str, db_project: str, db_region: str, db_instance: str
+    db_user: str,
+    db_pass: str,
+    db_project: str,
+    db_region: str,
+    db_instance: str,
 ) -> AsyncGenerator[str, None]:
     db_name = get_env_var("DB_NAME", "name of a postgres database")
     loop = asyncio.get_running_loop()
@@ -108,7 +111,7 @@ async def ds(
         region=db_region,
         instance=db_instance,
     )
-    t = create_db
+    _ = create_db
     ds = await datastore.create(cfg)
 
     airports_ds_path = "../data/airport_dataset.csv"
@@ -146,7 +149,8 @@ async def test_export_dataset(ds: cloudsql_postgres.Client):
     )
 
     diff_airports = compare(
-        load_csv(open(airports_ds_path), "id"), load_csv(open(airports_new_path), "id")
+        load_csv(open(airports_ds_path), "id"),
+        load_csv(open(airports_new_path), "id"),
     )
     assert diff_airports["added"] == []
     assert diff_airports["removed"] == []
@@ -165,7 +169,8 @@ async def test_export_dataset(ds: cloudsql_postgres.Client):
     assert diff_amenities["columns_removed"] == []
 
     diff_flights = compare(
-        load_csv(open(flights_ds_path), "id"), load_csv(open(flights_new_path), "id")
+        load_csv(open(flights_ds_path), "id"),
+        load_csv(open(flights_new_path), "id"),
     )
     assert diff_flights["added"] == []
     assert diff_flights["removed"] == []
@@ -275,7 +280,9 @@ search_airports_test_data = [
 ]
 
 
-@pytest.mark.parametrize("country, city, name, expected", search_airports_test_data)
+@pytest.mark.parametrize(
+    "country, city, name, expected", search_airports_test_data
+)
 async def test_search_airports(
     ds: cloudsql_postgres.Client,
     country: str,
@@ -325,7 +332,10 @@ amenities_search_test_data = [
             models.Amenity(
                 id=27,
                 name="Green Beans Coffee",
-                description="A third wave coffee concept serving handcrafted coffee creations exclusively for travelers in airports across America. For over 25 years Green Beans Coffee has been roasted in the USA, and loved around with world.",
+                description="""A third wave coffee concept serving handcrafted
+                "coffee creations exclusively for travelers in airports across
+                America. For over 25 years Green Beans Coffee has been roasted
+                in the USA, and loved around with world.""",
                 location="near the entrance to G Gates",
                 terminal="Ed Lee International Main Hall",
                 category="restaurant",
@@ -359,7 +369,8 @@ amenities_search_test_data = [
             models.Amenity(
                 id=90,
                 name="DFS Duty Free Galleria",
-                description="Liquor, tobacco, cosmetics, fragrances and designer boutiques–duty free",
+                description="""Liquor, tobacco, cosmetics, fragrances and
+                designer boutiques–duty free""",
                 location="Gates, near Gate A3",
                 terminal="International Terminal A",
                 category="shop",
@@ -384,7 +395,8 @@ amenities_search_test_data = [
             models.Amenity(
                 id=100,
                 name="Gucci",
-                description="Luxury apparel, handbags and accessories-duty free",
+                description="""Luxury apparel, handbags and accessories-duty
+                free""",
                 location="Gates, near Gate G2",
                 terminal="International Terminal G",
                 category="shop",
@@ -421,7 +433,8 @@ amenities_search_test_data = [
 
 
 @pytest.mark.parametrize(
-    "query_embedding, similarity_threshold, top_k, expected", amenities_search_test_data
+    "query_embedding, similarity_threshold, top_k, expected",
+    amenities_search_test_data,
 )
 async def test_amenities_search(
     ds: cloudsql_postgres.Client,
@@ -430,7 +443,9 @@ async def test_amenities_search(
     top_k: int,
     expected: List[models.Amenity],
 ):
-    res = await ds.amenities_search(query_embedding, similarity_threshold, top_k)
+    res = await ds.amenities_search(
+        query_embedding, similarity_threshold, top_k
+    )
     assert res == expected
 
 
@@ -442,8 +457,12 @@ async def test_get_flight(ds: cloudsql_postgres.Client):
         flight_number="1158",
         departure_airport="SFO",
         arrival_airport="ORD",
-        departure_time=datetime.strptime("2024-01-01 05:57:00", "%Y-%m-%d %H:%M:%S"),
-        arrival_time=datetime.strptime("2024-01-01 12:13:00", "%Y-%m-%d %H:%M:%S"),
+        departure_time=datetime.strptime(
+            "2024-01-01 05:57:00", "%Y-%m-%d %H:%M:%S"
+        ),
+        arrival_time=datetime.strptime(
+            "2024-01-01 12:13:00", "%Y-%m-%d %H:%M:%S"
+        ),
         departure_gate="C38",
         arrival_gate="D30",
     )
@@ -630,5 +649,7 @@ async def test_search_flights_by_airports(
     arrival_airport: str,
     expected: List[models.Flight],
 ):
-    res = await ds.search_flights_by_airports(date, departure_airport, arrival_airport)
+    res = await ds.search_flights_by_airports(
+        date, departure_airport, arrival_airport
+    )
     assert res == expected

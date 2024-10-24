@@ -14,7 +14,6 @@
 
 import csv
 from abc import ABC, abstractmethod
-from datetime import datetime
 from typing import Generic, List, Optional, TypeVar
 
 import models
@@ -48,7 +47,9 @@ class Client(ABC, Generic[C]):
 
     async def load_dataset(
         self, airports_ds_path, amenities_ds_path, flights_ds_path
-    ) -> tuple[List[models.Airport], List[models.Amenity], List[models.Flight]]:
+    ) -> tuple[
+        List[models.Airport], List[models.Amenity], List[models.Flight]
+    ]:
         airports: List[models.Airport] = []
         with open(airports_ds_path, "r") as f:
             reader = csv.DictReader(f, delimiter=",")
@@ -57,7 +58,9 @@ class Client(ABC, Generic[C]):
         amenities: list[models.Amenity] = []
         with open(amenities_ds_path, "r") as f:
             reader = csv.DictReader(f, delimiter=",")
-            amenities = [models.Amenity.model_validate(line) for line in reader]
+            amenities = [
+                models.Amenity.model_validate(line) for line in reader
+            ]
 
         flights: List[models.Flight] = []
         with open(flights_ds_path, "r") as f:
@@ -141,7 +144,9 @@ class Client(ABC, Generic[C]):
     @abstractmethod
     async def export_data(
         self,
-    ) -> tuple[list[models.Airport], list[models.Amenity], list[models.Flight]]:
+    ) -> tuple[
+        list[models.Airport], list[models.Amenity], list[models.Flight]
+    ]:
         pass
 
     @abstractmethod
@@ -167,7 +172,10 @@ class Client(ABC, Generic[C]):
 
     @abstractmethod
     async def amenities_search(
-        self, query_embedding: list[float], similarity_threshold: float, top_k: int
+        self,
+        query_embedding: list[float],
+        similarity_threshold: float,
+        top_k: int,
     ) -> list[models.Amenity]:
         raise NotImplementedError("Subclass should implement this!")
 
@@ -221,7 +229,6 @@ class Client(ABC, Generic[C]):
 
 async def create(config: AbstractConfig) -> Client:
     for cls in Client.__subclasses__():
-        s = f"{config.kind} == {cls.kind}"
         if config.kind == cls.kind:
             return await cls.create(config)  # type: ignore
     raise TypeError(f"No clients of kind '{config.kind}'")

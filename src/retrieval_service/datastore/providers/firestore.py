@@ -51,7 +51,9 @@ class Client(datastore.Client[Config]):
         amenities: list[models.Amenity],
         flights: list[models.Flight],
     ) -> None:
-        async def delete_collections(collection_list: list[AsyncCollectionReference]):
+        async def delete_collections(
+            collection_list: list[AsyncCollectionReference],
+        ):
             # Checks if colelction exists and deletes all documents
             delete_tasks = []
             for collection_ref in collection_list:
@@ -61,7 +63,9 @@ class Client(datastore.Client[Config]):
 
                 docs = collection_ref.stream()
                 async for doc in docs:
-                    delete_tasks.append(asyncio.create_task(doc.reference.delete()))
+                    delete_tasks.append(
+                        asyncio.create_task(doc.reference.delete())
+                    )
             asyncio.gather(*delete_tasks)
 
         # Check if the collections already exist; if so, delete collections
@@ -131,7 +135,9 @@ class Client(datastore.Client[Config]):
 
     async def export_data(
         self,
-    ) -> tuple[list[models.Airport], list[models.Amenity], list[models.Flight]]:
+    ) -> tuple[
+        list[models.Airport], list[models.Amenity], list[models.Flight]
+    ]:
         airport_docs = self.__client.collection("airports").stream()
         amenities_docs = self.__client.collection("amenities").stream()
         flights_docs = self.__client.collection("flights").stream()
@@ -188,7 +194,9 @@ class Client(datastore.Client[Config]):
             query = query.where("city", "==", city)
 
         if name is not None:
-            query = query.where("name", ">=", name).where("name", "<=", name + "\uf8ff")
+            query = query.where("name", ">=", name).where(
+                "name", "<=", name + "\uf8ff"
+            )
 
         docs = query.stream()
         airports = []
@@ -206,9 +214,14 @@ class Client(datastore.Client[Config]):
         return models.Amenity.model_validate(amenity_dict)
 
     async def amenities_search(
-        self, query_embedding: list[float], similarity_threshold: float, top_k: int
+        self,
+        query_embedding: list[float],
+        similarity_threshold: float,
+        top_k: int,
     ) -> list[models.Amenity]:
-        raise NotImplementedError("Semantic search not yet supported in Firestore.")
+        raise NotImplementedError(
+            "Semantic search not yet supported in Firestore."
+        )
 
     async def get_flight(self, flight_id: int) -> Optional[models.Flight]:
         query = self.__client.collection("flights").where(

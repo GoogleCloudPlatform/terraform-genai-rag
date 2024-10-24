@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime, time
+from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -22,7 +22,6 @@ import datastore
 import models
 
 from . import init_app
-from .app import AppConfig
 
 
 @pytest.fixture(scope="module")
@@ -37,7 +36,7 @@ def app():
 
 @patch.object(datastore, "create")
 def test_hello_world(m_datastore, app):
-    m_datastore = AsyncMock()
+    AsyncMock()
     with TestClient(app) as client:
         response = client.get("/")
         assert response.status_code == 200
@@ -92,11 +91,15 @@ get_airport_params = [
     "method_name, params, mock_return, expected", get_airport_params
 )
 @patch.object(datastore, "create")
-def test_get_airport(m_datastore, app, method_name, params, mock_return, expected):
+def test_get_airport(
+    m_datastore, app, method_name, params, mock_return, expected
+):
     with TestClient(app) as client:
         with patch.object(
-            m_datastore.return_value, method_name, AsyncMock(return_value=mock_return)
-        ) as mock_method:
+            m_datastore.return_value,
+            method_name,
+            AsyncMock(return_value=mock_return),
+        ) as _:
             response = client.get(
                 "/airports",
                 params=params,
@@ -211,11 +214,15 @@ search_airports_params = [
     "method_name, params, mock_return, expected", search_airports_params
 )
 @patch.object(datastore, "create")
-def test_search_airports(m_datastore, app, method_name, params, mock_return, expected):
+def test_search_airports(
+    m_datastore, app, method_name, params, mock_return, expected
+):
     with TestClient(app) as client:
         with patch.object(
-            m_datastore.return_value, method_name, AsyncMock(return_value=mock_return)
-        ) as mock_method:
+            m_datastore.return_value,
+            method_name,
+            AsyncMock(return_value=mock_return),
+        ) as _:
             response = client.get(
                 "/airports/search",
                 params=params,
@@ -234,7 +241,7 @@ def test_search_airports(m_datastore, app, method_name, params, mock_return, exp
 )
 @patch.object(datastore, "create")
 def test_search_airports_with_bad_params(m_datastore, app, params):
-    m_datastore = AsyncMock()
+    AsyncMock()
     with TestClient(app) as client:
         response = client.get("/airports/search", params=params)
     assert response.status_code == 422
@@ -286,11 +293,15 @@ get_amenity_params = [
     "method_name, params, mock_return, expected", get_amenity_params
 )
 @patch.object(datastore, "create")
-def test_get_amenity(m_datastore, app, method_name, params, mock_return, expected):
+def test_get_amenity(
+    m_datastore, app, method_name, params, mock_return, expected
+):
     with TestClient(app) as client:
         with patch.object(
-            m_datastore.return_value, method_name, AsyncMock(return_value=mock_return)
-        ) as mock_method:
+            m_datastore.return_value,
+            method_name,
+            AsyncMock(return_value=mock_return),
+        ) as _:
             response = client.get(
                 "/amenities",
                 params={
@@ -390,11 +401,15 @@ amenities_search_params = [
     "method_name, params, mock_return, expected", amenities_search_params
 )
 @patch.object(datastore, "create")
-def test_amenities_search(m_datastore, app, method_name, params, mock_return, expected):
+def test_amenities_search(
+    m_datastore, app, method_name, params, mock_return, expected
+):
     with TestClient(app) as client:
         with patch.object(
-            m_datastore.return_value, method_name, AsyncMock(return_value=mock_return)
-        ) as mock_method:
+            m_datastore.return_value,
+            method_name,
+            AsyncMock(return_value=mock_return),
+        ) as _:
             response = client.get(
                 "/amenities/search",
                 params=params,
@@ -419,7 +434,9 @@ get_flight_params = [
             departure_time=datetime.strptime(
                 "2023-01-01 05:57:00", "%Y-%m-%d %H:%M:%S"
             ),
-            arrival_time=datetime.strptime("2023-01-01 12:13:00", "%Y-%m-%d %H:%M:%S"),
+            arrival_time=datetime.strptime(
+                "2023-01-01 12:13:00", "%Y-%m-%d %H:%M:%S"
+            ),
             departure_gate="BAZ",
             arrival_gate="QUX",
         ),
@@ -443,11 +460,15 @@ get_flight_params = [
     "method_name, params, mock_return, expected", get_flight_params
 )
 @patch.object(datastore, "create")
-def test_get_flight(m_datastore, app, method_name, params, mock_return, expected):
+def test_get_flight(
+    m_datastore, app, method_name, params, mock_return, expected
+):
     with TestClient(app) as client:
         with patch.object(
-            m_datastore.return_value, method_name, AsyncMock(return_value=mock_return)
-        ) as mock_method:
+            m_datastore.return_value,
+            method_name,
+            AsyncMock(return_value=mock_return),
+        ) as _:
             response = client.get(
                 "/flights",
                 params=params,
@@ -610,11 +631,15 @@ search_flights_params = [
     "method_name, params, mock_return, expected", search_flights_params
 )
 @patch.object(datastore, "create")
-def test_search_flights(m_datastore, app, method_name, params, mock_return, expected):
+def test_search_flights(
+    m_datastore, app, method_name, params, mock_return, expected
+):
     with TestClient(app) as client:
         with patch.object(
-            m_datastore.return_value, method_name, AsyncMock(return_value=mock_return)
-        ) as mock_method:
+            m_datastore.return_value,
+            method_name,
+            AsyncMock(return_value=mock_return),
+        ) as _:
             response = client.get("/flights/search", params=params)
     assert response.status_code == 200
     output = response.json()
@@ -652,7 +677,7 @@ search_flights_bad_params = [
 @pytest.mark.parametrize("params", search_flights_bad_params)
 @patch.object(datastore, "create")
 def test_search_flights_with_bad_params(m_datastore, app, params):
-    m_datastore = AsyncMock()
+    AsyncMock()
     with TestClient(app) as client:
         response = client.get("/flights/search", params=params)
     assert response.status_code == 422

@@ -20,12 +20,13 @@ import aiohttp
 import google.oauth2.id_token  # type: ignore
 from google.auth import compute_engine  # type: ignore
 from google.auth.transport.requests import Request  # type: ignore
-from langchain.agents.agent import ExceptionTool  # type: ignore
 from langchain.tools import StructuredTool
 from pydantic.v1 import BaseModel, Field
 
 # URL to connect to the backend services
-BASE_URL = os.getenv("SERVICE_URL", default="127.0.0.1") # f"{SERVICE_URL}:8080"
+BASE_URL = os.getenv(
+    "SERVICE_URL", default="127.0.0.1"
+)  # f"{SERVICE_URL}:8080"
 SERVICE_ACCOUNT_EMAIL = os.getenv("SERVICE_ACCOUNT_EMAIL", default=None)
 CREDENTIALS = None
 
@@ -64,7 +65,7 @@ def get_id_token():
 def get_headers(client: aiohttp.ClientSession):
     """Helper method to generate ID tokens for authenticated requests"""
     headers = client.headers
-    if not "http://" in BASE_URL:
+    if "http://" not in BASE_URL:
         # Append ID Token to make authenticated requests to Cloud Run services
         headers["Authorization"] = f"Bearer {get_id_token()}"
     return headers
@@ -93,10 +94,12 @@ def generate_search_airports(client: aiohttp.ClientSession):
         num = 2
         response_json = await response.json()
         if len(response_json) < 1:
-            return "There are no airports matching that query. Let the user know there are no results."
+            return ("There are no airports matching that query. Let the user "
+                    "know there are no results.")
         elif len(response_json) > num:
             return (
-                f"There are {len(response_json)} airports matching that query. Here are the first {num} results:\n"
+                f"There are {len(response_json)} airports matching that "
+                f"query. Here are the first {num} results:\n"
                 + " ".join([f"{response_json[i]}" for i in range(num)])
             )
         else:
@@ -127,7 +130,9 @@ class ListFlights(BaseModel):
     departure_airport: Optional[str] = Field(
         description="Departure airport 3-letter code",
     )
-    arrival_airport: Optional[str] = Field(description="Arrival airport 3-letter code")
+    arrival_airport: Optional[str] = Field(
+        description="Arrival airport 3-letter code"
+    )
     date: Optional[str] = Field(description="Date of flight departure")
 
 
@@ -151,10 +156,12 @@ def generate_list_flights(client: aiohttp.ClientSession):
         num = 2
         response_json = await response.json()
         if len(response_json) < 1:
-            return "There are no flights matching that query. Let the user know there are no results."
+            return ("There are no flights matching that query. Let the user "
+                    "know there are no results.")
         elif len(response_json) > num:
             return (
-                f"There are {len(response_json)} flights matching that query. Here are the first {num} results:\n"
+                f"There are {len(response_json)} flights matching that query. "
+                f"Here are the first {num} results:\n"
                 + " ".join([f"{response_json[i]}" for i in range(num)])
             )
         else:
@@ -240,10 +247,12 @@ async def initialize_tools(client: aiohttp.ClientSession):
             coroutine=generate_search_airports(client),
             name="Search Airport",
             description="""
-                        Use this tool to list all airports matching search criteria.
-                        Takes at least one of country, city, name, or all and returns all matching airports.
-                        The agent can decide to return the results directly to the user.
-                        Input of this tool must be in JSON format and include all three inputs - country, city, name.
+                        Use this tool to list all airports matching search
+                        criteria. Takes at least one of country, city, name, or
+                        all and returns all matching airports. The agent can
+                        decide to return the results directly to the user.
+                        Input of this tool must be in JSON format and include
+                        all three inputs - country, city, name.
                         Example:
                         {{
                             "country": "United States",
@@ -269,12 +278,14 @@ async def initialize_tools(client: aiohttp.ClientSession):
             coroutine=generate_search_flights_by_number(client),
             name="Search Flights By Flight Number",
             description="""
-                        Use this tool to get info for a specific flight. Do NOT use this tool with a flight id.
-                        Takes an airline and flight number and returns info on the flight.
-                        Do NOT guess an airline or flight number.
-                        A flight number is a code for an airline service consisting of two-character
-                        airline designator and a 1 to 4 digit number ex. OO123, DL 1234, BA 405, AS 3452.
-                        If the tool returns more than one option choose the date closes to today.
+                        Use this tool to get info for a specific flight. Do NOT
+                        use this tool with a flight id. Takes an airline and
+                        flight number and returns info on the flight. Do NOT
+                        guess an airline or flight number. A flight number is a
+                        code for an airline service consisting of two-character
+                        airline designator and a 1 to 4 digit number ex. OO123,
+                        DL 1234, BA 405, AS 3452. If the tool returns more than
+                        one option choose the date closes to today.
                         """,
             args_schema=FlightNumberInput,
         ),
@@ -282,10 +293,13 @@ async def initialize_tools(client: aiohttp.ClientSession):
             coroutine=generate_list_flights(client),
             name="List Flights",
             description="""
-                        Use this tool to list all flights matching search criteria.
-                        Takes an arrival airport, a departure airport, or both, filters by date and returns all matching flights.
-                        The agent can decide to return the results directly to the user.
-                        Input of this tool must be in JSON format and include all three inputs - arrival_airport, departure_airport, and date.
+                        Use this tool to list all flights matching search
+                        criteria. Takes an arrival airport, a departure
+                        airport, or both, filters by date and returns all
+                        matching flights. The agent can decide to return the
+                        results directly to the user. Input of this tool must
+                        be in JSON format and include all three inputs -
+                        arrival_airport, departure_airport, and date.
                         Example:
                         {{
                             "departure_airport": "SFO",
@@ -311,12 +325,14 @@ async def initialize_tools(client: aiohttp.ClientSession):
             coroutine=generate_search_amenities(client),
             name="Search Amenities",
             description="""
-                        Use this tool to search amenities by name or to recommended airport amenities at SFO.
-                        If user provides flight info, use 'Get Flight' and 'Get Flights by Number'
-                        first to get gate info and location.
-                        Only recommend amenities that are returned by this query.
-                        Find amenities close to the user by matching the terminal and then comparing
-                        the gate numbers. Gate number iterate by letter and number, example A1 A2 A3
+                        Use this tool to search amenities by name or to
+                        recommended airport amenities at SFO. If user provides
+                        flight info, use 'Get Flight' and 'Get Flights by
+                        Number' first to get gate info and location. Only
+                        recommend amenities that are returned by this query.
+                        Find amenities close to the user by matching the
+                        terminal and then comparing the gate numbers. Gate
+                        number iterate by letter and number, example A1 A2 A3
                         B1 B2 B3 C1 C2 C3. Gate A3 is close to A2 and B1.
                         """,
             args_schema=QueryInput,
@@ -361,7 +377,8 @@ async def initialize_tools(client: aiohttp.ClientSession):
             name="List Tickets",
             description="""
                         Use this tool to list a user's flight tickets.
-                        Takes no input and returns a list of current user's flight tickets.
+                        Takes no input and returns a list of current user's
+                        flight tickets.
                         """,
         ),
     ]
