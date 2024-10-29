@@ -59,3 +59,13 @@ variable "retrieval_container" {
   description = "The public Artifact Registry URI for the retrieval container"
   default     = "us-docker.pkg.dev/google-samples/containers/jss/rag-retrieval-service:v0.0.2"
 }
+
+variable "database_type" {
+  type        = string
+  description = "Cloud SQL MySQL, Cloud SQL PostgreSQL, or AlloyDB"
+  default     = "postgresql"
+  validation {
+    condition     = contains(["mysql", "postgresql","alloydb"], var.database_type)
+    error_message = "Must be \"alloydb\", \"mysql\" or \"postgresql\"."
+  }
+}

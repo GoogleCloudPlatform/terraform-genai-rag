@@ -18,7 +18,6 @@
 
 # Handle Database
 resource "google_sql_database_instance" "main" {
-  
   name             = "genai-rag-db-${random_id.id.hex}"
   database_version = "POSTGRES_15"
   region           = var.region
