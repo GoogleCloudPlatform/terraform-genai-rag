@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 from typing import Any, Mapping, Optional
 
 from fastapi import APIRouter, HTTPException, Request
@@ -220,3 +221,22 @@ async def policies_search(query: str, top_k: int, request: Request):
 
     results, sql = await ds.policies_search(query_embedding, 0.5, top_k)
     return {"results": results, "sql": sql}
+
+@routes.get("/data/import")
+async def import_data(
+    request: Request,
+):
+    airports_ds_path = "./data/airport_dataset.csv"
+    amenities_ds_path = "./data/amenity_dataset.csv"
+    flights_ds_path = "./data/flights_dataset.csv"
+
+    # cfg = parse_config()
+    ds: datastore.Client = request.app.state.datastore
+    # ds = datastore.Client
+    airports, amenities, flights = await ds.load_dataset(
+        airports_ds_path, amenities_ds_path, flights_ds_path
+    )
+    await ds.initialize_data(airports, amenities, flights)
+    await ds.close()
+
+    print("database init done.")
