@@ -14,7 +14,7 @@
 
 steps:
   - id: Install dependencies
-    name: python:3.11
+    name: python:3.12
     dir: retrieval_service
     entrypoint: pip
     args:
@@ -28,7 +28,7 @@ steps:
       ]
 
   - id: Update config
-    name: python:3.11
+    name: python:3.12
     dir: retrieval_service
     secretEnv:
       - PGUSER
@@ -47,7 +47,7 @@ steps:
         sed -i "s/my-instance/${_CLOUDSQL_INSTANCE}/g" config.yml
 
   - id: Run Cloud SQL DB integration tests
-    name: python:3.11
+    name: python:3.12
     dir: retrieval_service
     env: # Set env var expected by tests
       - "DB_NAME=${_DATABASE_NAME}"
