@@ -18,7 +18,7 @@
 
 # Handle Database
 resource "google_sql_database_instance" "main" {
-  
+
   name             = "genai-rag-db-${random_id.id.hex}"
   database_version = "POSTGRES_15"
   region           = var.region
@@ -35,7 +35,7 @@ resource "google_sql_database_instance" "main" {
     ip_configuration {
       ipv4_enabled = false
       psc_config {
-        psc_enabled               = true
+        psc_enabled = true
         allowed_consumer_projects = [
           module.project-services.project_id
         ]
@@ -49,7 +49,11 @@ resource "google_sql_database_instance" "main" {
       name  = "cloudsql.enable_google_ml_integration"
       value = "on"
     }
+
+    
   }
+
+  
   deletion_protection = var.deletion_protection
 
 }
@@ -91,6 +95,7 @@ resource "google_compute_network" "main" {
 
 # # Configure IP
 resource "google_compute_address" "default" {
+  project      = module.project-services.project_id
   name         = "psc-compute-address"
   region       = var.region
   address_type = "INTERNAL"
@@ -99,10 +104,33 @@ resource "google_compute_address" "default" {
 }
 
 resource "google_compute_forwarding_rule" "default" {
-  name                  = "psc-forwarding-rule-${google_sql_database_instance.default.name}"
+  project               = module.project-services.project_id
+  name                  = "psc-forwarding-rule-${google_sql_database_instance.main.name}"
   region                = var.region
   network               = "default"
   ip_address            = google_compute_address.default.self_link
   load_balancing_scheme = ""
-  target                = google_sql_database_instance.default.psc_service_attachment_link
+  target                = google_sql_database_instance.main.psc_service_attachment_link
+}
+
+resource "google_dns_managed_zone" "psc" {
+  project     = module.project-services.project_id
+  name        = "${google_sql_database_instance.main.name}-zone"
+  dns_name    = "${google_sql_database_instance.main.region}.sql.goog."
+  description = "Regional zone for Cloud SQL PSC instances"
+  visibility  = "private"
+  private_visibility_config {
+    networks {
+      network_url = google_compute_network.main.id
+    }
+  }
+}
+
+resource "google_dns_record_set" "psc" {
+  project      = module.project-services.project_id
+  name         = google_sql_database_instance.main.dns_name
+  type         = "A"
+  ttl          = 300
+  managed_zone = google_dns_managed_zone.psc.name
+  rrdatas      = [google_compute_address.default.address]
 }

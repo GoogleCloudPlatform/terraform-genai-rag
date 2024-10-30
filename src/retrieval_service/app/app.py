@@ -26,7 +26,7 @@ import datastore
 
 from .routes import routes
 
-EMBEDDING_MODEL_NAME = "textembedding-gecko@001"
+EMBEDDING_MODEL_NAME = "text-embedding-004"
 
 
 class AppConfig(BaseModel):

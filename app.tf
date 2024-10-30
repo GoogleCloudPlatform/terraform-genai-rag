@@ -103,6 +103,13 @@ resource "google_cloud_run_v2_service" "retrieval_service" {
       }
     }
 
+    vpc_access {
+      egress = "PRIVATE_RANGES_ONLY"
+      network_interfaces {
+        network = google_compute_network.main.id
+      }
+    }
+
   }
 }
 
@@ -149,24 +156,24 @@ resource "google_cloud_run_service_iam_member" "noauth_frontend" {
 
 
 
-data "google_service_account_id_token" "oidc" {
-  target_audience = google_cloud_run_v2_service.retrieval_service.uri
-}
+# data "google_service_account_id_token" "oidc" {
+#   target_audience = google_cloud_run_v2_service.retrieval_service.uri
+# }
 
-# # Trigger the database init step from the retrieval service
-# # Manual Run: curl -H "Authorization: Bearer $(gcloud auth print-identity-token)" {run_service}/data/import
+# # # Trigger the database init step from the retrieval service
+# # # Manual Run: curl -H "Authorization: Bearer $(gcloud auth print-identity-token)" {run_service}/data/import
 
-# tflint-ignore: terraform_unused_declarations
-data "http" "database_init" {
-  url    = "${google_cloud_run_v2_service.retrieval_service.uri}/data/import"
-  method = "GET"
-  request_headers = {
-    Accept = "application/json"
-  Authorization = "Bearer ${data.google_service_account_id_token.oidc.id_token}" }
+# # tflint-ignore: terraform_unused_declarations
+# data "http" "database_init" {
+#   url    = "${google_cloud_run_v2_service.retrieval_service.uri}/data/import"
+#   method = "GET"
+#   request_headers = {
+#     Accept = "application/json"
+#   Authorization = "Bearer ${data.google_service_account_id_token.oidc.id_token}" }
 
-  depends_on = [
-    google_sql_database.database,
-    google_cloud_run_v2_service.retrieval_service,
-    data.google_service_account_id_token.oidc,
-  ]
-}
+#   depends_on = [
+#     google_sql_database.database,
+#     google_cloud_run_v2_service.retrieval_service,
+#     data.google_service_account_id_token.oidc,
+#   ]
+# }

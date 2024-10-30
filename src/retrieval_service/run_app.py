@@ -21,7 +21,7 @@ from app import init_app, parse_config
 
 
 async def main():
-    cfg = parse_config()
+    cfg = parse_config("config.yml") # string
     app = init_app(cfg)
     if app is None:
         raise TypeError("app not instantiated")

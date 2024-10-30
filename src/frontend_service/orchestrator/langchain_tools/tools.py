@@ -24,7 +24,8 @@ from google.auth.transport.requests import Request  # type: ignore
 from langchain.tools import StructuredTool
 from pydantic.v1 import BaseModel, Field
 
-BASE_URL = os.getenv("BASE_URL", default="http://127.0.0.1:8080")
+BASE_URL = os.getenv("SERVICE_URL") # "BASE_URL", default="http://127.0.0.1:8080")
+SERVICE_ACCOUNT_EMAIL = os.getenv("SERVICE_ACCOUNT_EMAIL", default=None)
 CREDENTIALS = None
 
 
@@ -36,6 +37,12 @@ def get_id_token():
     global CREDENTIALS
     if CREDENTIALS is None:
         CREDENTIALS, _ = google.auth.default()
+        if SERVICE_ACCOUNT_EMAIL:
+            # Use Specific SA
+            CREDENTIALS = compute_engine.Credentials(
+                service_account_email=SERVICE_ACCOUNT_EMAIL,
+                scopes=["https://www.googleapis.com/auth/cloud-platform"],
+            )
         if not hasattr(CREDENTIALS, "id_token"):
             # Use Compute Engine default credential
             CREDENTIALS = compute_engine.IDTokenCredentials(

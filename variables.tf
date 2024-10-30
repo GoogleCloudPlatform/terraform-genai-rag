@@ -51,13 +51,13 @@ variable "deletion_protection" {
 variable "frontend_container" {
   type        = string
   description = "The public Artifact Registry URI for the frontend container"
-  default     = "us-docker.pkg.dev/google-samples/containers/jss/rag-frontend-service:v0.0.1"
+  default     = "us-central1-docker.pkg.dev/analytics-use-case-3-2/cloud-run-source-deploy/frontend-service" # "us-docker.pkg.dev/google-samples/containers/jss/rag-frontend-service:v0.0.1"
 }
 
 variable "retrieval_container" {
   type        = string
   description = "The public Artifact Registry URI for the retrieval container"
-  default     = "us-docker.pkg.dev/google-samples/containers/jss/rag-retrieval-service:v0.0.2"
+  default     = "us-central1-docker.pkg.dev/analytics-use-case-3-2/cloud-run-source-deploy/retrieval-service" # "us-docker.pkg.dev/google-samples/containers/jss/rag-retrieval-service:v0.0.2"
 }
 
 variable "database_type" {
@@ -65,7 +65,7 @@ variable "database_type" {
   description = "Cloud SQL MySQL, Cloud SQL PostgreSQL, or AlloyDB"
   default     = "postgresql"
   validation {
-    condition     = contains(["mysql", "postgresql","alloydb"], var.database_type)
+    condition     = contains(["mysql", "postgresql", "alloydb"], var.database_type)
     error_message = "Must be \"alloydb\", \"mysql\" or \"postgresql\"."
   }
 }
