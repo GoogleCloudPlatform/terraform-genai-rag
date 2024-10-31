@@ -39,9 +39,9 @@ resource "google_project_iam_member" "allrun" {
 
 # Deploys a service to be used for the database
 resource "google_cloud_run_v2_service" "retrieval_service" {
-  name     = "retrieval-service-${random_id.id.hex}"
-  location = var.region
-  project  = module.project-services.project_id
+  name                = "retrieval-service-${random_id.id.hex}"
+  location            = var.region
+  project             = module.project-services.project_id
   deletion_protection = var.deletion_protection
 
   template {
@@ -117,9 +117,9 @@ resource "google_cloud_run_v2_service" "retrieval_service" {
 
 # Deploys a service to be used for the frontend
 resource "google_cloud_run_v2_service" "frontend_service" {
-  name     = "frontend-service-${random_id.id.hex}"
-  location = var.region
-  project  = module.project-services.project_id
+  name                = "frontend-service-${random_id.id.hex}"
+  location            = var.region
+  project             = module.project-services.project_id
   deletion_protection = var.deletion_protection
 
   template {
