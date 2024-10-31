@@ -42,6 +42,7 @@ resource "google_cloud_run_v2_service" "retrieval_service" {
   name     = "retrieval-service-${random_id.id.hex}"
   location = var.region
   project  = module.project-services.project_id
+  # deletion_protection = var.deletion_protection
 
   template {
     service_account = google_service_account.runsa.email
@@ -104,9 +105,10 @@ resource "google_cloud_run_v2_service" "retrieval_service" {
     }
 
     vpc_access {
-      egress = "PRIVATE_RANGES_ONLY"
+      egress = "PRIVATE_RANGES_ONLY" # "ALL_TRAFFIC" # "PRIVATE_RANGES_ONLY"
       network_interfaces {
-        network = google_compute_network.main.id
+        network    = google_compute_network.main.id
+        subnetwork = google_compute_subnetwork.subnetwork.id
       }
     }
 
@@ -118,6 +120,7 @@ resource "google_cloud_run_v2_service" "frontend_service" {
   name     = "frontend-service-${random_id.id.hex}"
   location = var.region
   project  = module.project-services.project_id
+  # deletion_protection = var.deletion_protection
 
   template {
     service_account = google_service_account.runsa.email

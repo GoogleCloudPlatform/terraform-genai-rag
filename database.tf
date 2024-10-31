@@ -50,10 +50,10 @@ resource "google_sql_database_instance" "main" {
       value = "on"
     }
 
-    
+
   }
 
-  
+
   deletion_protection = var.deletion_protection
 
 }
@@ -87,11 +87,18 @@ resource "google_project_iam_member" "vertex_integration" {
 # # Create VPC and Subnet
 resource "google_compute_network" "main" {
   name                    = "genai-rag-psc"
-  auto_create_subnetworks = true
+  auto_create_subnetworks = false
   project                 = module.project-services.project_id
 }
 
 # # Create Subnet
+resource "google_compute_subnetwork" "subnetwork" {
+  name          = "genai-rag-psc-subnet"
+  ip_cidr_range = "10.2.0.0/16"
+  region        = var.region
+  network       = google_compute_network.main.id
+  project       = module.project-services.project_id
+}
 
 # # Configure IP
 resource "google_compute_address" "default" {
@@ -99,15 +106,15 @@ resource "google_compute_address" "default" {
   name         = "psc-compute-address"
   region       = var.region
   address_type = "INTERNAL"
-  subnetwork   = "default"     # TODO: Replace value with the name of the subnet here.
-  address      = "10.128.0.42" # TODO: Replace value with the IP address to reserve.
+  subnetwork   = google_compute_subnetwork.subnetwork.id
+  address      = "10.2.0.42"
 }
 
 resource "google_compute_forwarding_rule" "default" {
   project               = module.project-services.project_id
   name                  = "psc-forwarding-rule-${google_sql_database_instance.main.name}"
   region                = var.region
-  network               = "default"
+  network               = google_compute_network.main.id
   ip_address            = google_compute_address.default.self_link
   load_balancing_scheme = ""
   target                = google_sql_database_instance.main.psc_service_attachment_link
