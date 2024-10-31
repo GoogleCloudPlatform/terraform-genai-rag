@@ -17,14 +17,14 @@
 # Configure PSC
 # # Create VPC
 resource "google_compute_network" "main" {
-  name                    = "genai-rag-psc"
+  name                    = "genai-rag-psc-${random_id.id.hex}"
   auto_create_subnetworks = false
   project                 = module.project-services.project_id
 }
 
 # # Create Subnet
 resource "google_compute_subnetwork" "subnetwork" {
-  name          = "genai-rag-psc-subnet"
+  name          = "genai-rag-psc-subnet-${random_id.id.hex}"
   ip_cidr_range = "10.2.0.0/16"
   region        = var.region
   network       = google_compute_network.main.id
@@ -44,19 +44,19 @@ resource "google_compute_address" "default" {
 # # Create VPC / PSC forwarding rule
 resource "google_compute_forwarding_rule" "default" {
   project               = module.project-services.project_id
-  name                  = "psc-forwarding-rule-${google_sql_database_instance.main.name}"
+  name                  = "psc-forwarding-rule-${google_sql_database_instance.main[0].name}"
   region                = var.region
   network               = google_compute_network.main.id
   ip_address            = google_compute_address.default.self_link
   load_balancing_scheme = ""
-  target                = google_sql_database_instance.main.psc_service_attachment_link
+  target                = google_sql_database_instance.main[0].psc_service_attachment_link
 }
 
 # # Create DNS Zone for PSC
 resource "google_dns_managed_zone" "psc" {
   project     = module.project-services.project_id
-  name        = "${google_sql_database_instance.main.name}-zone"
-  dns_name    = "${google_sql_database_instance.main.region}.sql.goog."
+  name        = "${google_sql_database_instance.main[0].name}-${random_id.id.hex}-zone"
+  dns_name    = "${google_sql_database_instance.main[0].region}.sql.goog."
   description = "Regional zone for Cloud SQL PSC instances"
   visibility  = "private"
   private_visibility_config {
@@ -69,7 +69,7 @@ resource "google_dns_managed_zone" "psc" {
 # # Add SQL DNS record
 resource "google_dns_record_set" "psc" {
   project      = module.project-services.project_id
-  name         = google_sql_database_instance.main.dns_name
+  name         = google_sql_database_instance.main[0].dns_name
   type         = "A"
   ttl          = 300
   managed_zone = google_dns_managed_zone.psc.name

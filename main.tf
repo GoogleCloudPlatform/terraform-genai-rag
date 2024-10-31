@@ -22,8 +22,9 @@ module "project-services" {
   project_id  = var.project_id
   enable_apis = var.enable_apis
 
-  activate_apis = [
+  activate_apis = compact([
     "aiplatform.googleapis.com",
+    var.database_type == "alloydb" ? "alloydb.googleapis.com" : "",
     "artifactregistry.googleapis.com",
     "cloudapis.googleapis.com",
     "cloudbuild.googleapis.com",
@@ -33,10 +34,11 @@ module "project-services" {
     "run.googleapis.com",
     "secretmanager.googleapis.com",
     "serviceusage.googleapis.com",
+    var.database_type == "spanner" ? "spanner.googleapis.com" : "",
     "sqladmin.googleapis.com",
     "storage-api.googleapis.com",
     "storage.googleapis.com",
-  ]
+  ])
 }
 
 resource "random_id" "id" {

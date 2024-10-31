@@ -18,6 +18,7 @@
 
 # Handle Database
 resource "google_sql_database_instance" "main" {
+  count = var.database_type == "postgresql" ? 1 : 0
 
   name             = "genai-rag-db-${random_id.id.hex}"
   database_version = "POSTGRES_15"
@@ -60,17 +61,21 @@ resource "google_sql_database_instance" "main" {
 
 # # Create Database
 resource "google_sql_database" "database" {
+  count = var.database_type == "postgresql" ? 1 : 0
+
   project         = var.project_id
   name            = "assistantdemo"
-  instance        = google_sql_database_instance.main.name
+  instance        = google_sql_database_instance.main[0].name
   deletion_policy = "ABANDON"
 }
 
 # # Create Cloud SQL User
 resource "google_sql_user" "service" {
+  count = var.database_type == "postgresql" ? 1 : 0
+
   name            = "retrieval-service"
   project         = module.project-services.project_id
-  instance        = google_sql_database_instance.main.name
+  instance        = google_sql_database_instance.main[0].name
   type            = "BUILT_IN"
   password        = random_password.cloud_sql_password.result
   deletion_policy = "ABANDON"
@@ -78,7 +83,9 @@ resource "google_sql_user" "service" {
 
 # # Create SQL integration to vertex
 resource "google_project_iam_member" "vertex_integration" {
+  count = var.database_type == "postgresql" ? 1 : 0
+
   project = module.project-services.project_id
   role    = "roles/aiplatform.user"
-  member  = "serviceAccount:${google_sql_database_instance.main.service_account_email_address}"
+  member  = "serviceAccount:${google_sql_database_instance.main[0].service_account_email_address}"
 }

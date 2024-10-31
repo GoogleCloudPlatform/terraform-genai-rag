@@ -42,7 +42,7 @@ resource "google_cloud_run_v2_service" "retrieval_service" {
   name     = "retrieval-service-${random_id.id.hex}"
   location = var.region
   project  = module.project-services.project_id
-  # deletion_protection = var.deletion_protection
+  deletion_protection = var.deletion_protection
 
   template {
     service_account = google_service_account.runsa.email
@@ -51,7 +51,7 @@ resource "google_cloud_run_v2_service" "retrieval_service" {
     volumes {
       name = "cloudsql"
       cloud_sql_instance {
-        instances = [google_sql_database_instance.main.connection_name]
+        instances = [google_sql_database_instance.main[0].connection_name]
       }
     }
 
@@ -83,15 +83,15 @@ resource "google_cloud_run_v2_service" "retrieval_service" {
       }
       env {
         name  = "DB_INSTANCE"
-        value = google_sql_database_instance.main.name
+        value = google_sql_database_instance.main[0].name
       }
       env {
         name  = "DB_NAME"
-        value = google_sql_database.database.name
+        value = google_sql_database.database[0].name
       }
       env {
         name  = "DB_USER"
-        value = google_sql_user.service.name
+        value = google_sql_user.service[0].name
       }
       env {
         name = "DB_PASSWORD"
@@ -120,7 +120,7 @@ resource "google_cloud_run_v2_service" "frontend_service" {
   name     = "frontend-service-${random_id.id.hex}"
   location = var.region
   project  = module.project-services.project_id
-  # deletion_protection = var.deletion_protection
+  deletion_protection = var.deletion_protection
 
   template {
     service_account = google_service_account.runsa.email
