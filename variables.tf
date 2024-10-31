@@ -62,10 +62,10 @@ variable "retrieval_container" {
 
 variable "database_type" {
   type        = string
-  description = "Cloud SQL MySQL, Cloud SQL PostgreSQL, or AlloyDB"
+  description = "Cloud SQL MySQL, Cloud SQL PostgreSQL, AlloyDB, or Cloud Spanner"
   default     = "postgresql"
   validation {
-    condition     = contains(["mysql", "postgresql", "alloydb"], var.database_type)
-    error_message = "Must be \"alloydb\", \"mysql\" or \"postgresql\"."
+    condition     = contains(["mysql", "postgresql", "alloydb", "spanner"], var.database_type)
+    error_message = "Must be \"alloydb\", \"mysql\", \"postgresql\" or \"spanner\"."
   }
 }
