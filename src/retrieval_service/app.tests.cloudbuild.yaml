@@ -14,7 +14,7 @@
 
 steps:
   - id: Install dependencies
-    name: python:3.11
+    name: python:3.12
     dir: retrieval_service
     entrypoint: pip
     args:
@@ -28,7 +28,7 @@ steps:
       ]
 
   - id: Run retrieval service app tests
-    name: python:3.11
+    name: python:3.12
     dir: retrieval_service/app
     entrypoint: /bin/bash
     args:
