@@ -16,27 +16,30 @@
 
 module "project-services" {
   source                      = "terraform-google-modules/project-factory/google//modules/project_services"
-  version                     = "15.0.1"
+  version                     = "17.0.0"
   disable_services_on_destroy = false
 
   project_id  = var.project_id
   enable_apis = var.enable_apis
 
-  activate_apis = [
+  activate_apis = compact([
     "aiplatform.googleapis.com",
+    var.database_type == "alloydb" ? "alloydb.googleapis.com" : "",
     "artifactregistry.googleapis.com",
     "cloudapis.googleapis.com",
     "cloudbuild.googleapis.com",
     "compute.googleapis.com",
     "config.googleapis.com",
+    "dns.googleapis.com",
     "iam.googleapis.com",
     "run.googleapis.com",
     "secretmanager.googleapis.com",
     "serviceusage.googleapis.com",
+    var.database_type == "spanner" ? "spanner.googleapis.com" : "",
     "sqladmin.googleapis.com",
     "storage-api.googleapis.com",
     "storage.googleapis.com",
-  ]
+  ])
 }
 
 resource "random_id" "id" {
