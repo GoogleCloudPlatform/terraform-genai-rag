@@ -12,23 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import asyncio
 
-import uvicorn
+import datastore
+from app import parse_config
 
-from app import init_app, parse_config
 
+async def main() -> None:
+    airports_ds_path = "../data/airport_dataset.csv"
+    amenities_ds_path = "../data/amenity_dataset.csv"
+    flights_ds_path = "../data/flights_dataset.csv"
+    policies_ds_path = "../data/cymbalair_policy.csv"
 
-async def main():
-    cfg = parse_config("config.yml") # string
-    app = init_app(cfg)
-    if app is None:
-        raise TypeError("app not instantiated")
-    server = uvicorn.Server(
-        uvicorn.Config(app, host=str(cfg.host), port=cfg.port, log_level="info")
+    cfg = parse_config("config.yml")
+    ds = await datastore.create(cfg.datastore)
+    airports, amenities, flights, policies = await ds.load_dataset(
+        airports_ds_path, amenities_ds_path, flights_ds_path, policies_ds_path
     )
-    await server.serve()
+    await ds.initialize_data(airports, amenities, flights, policies)
+    await ds.close()
+
+    print("database init done.")
 
 
 if __name__ == "__main__":

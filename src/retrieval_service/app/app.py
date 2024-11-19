@@ -15,9 +15,9 @@
 from contextlib import asynccontextmanager
 from ipaddress import IPv4Address, IPv6Address
 from typing import Optional
+import os
 
 import yaml
-import os
 from fastapi import FastAPI
 from langchain_google_vertexai import VertexAIEmbeddings
 from pydantic import BaseModel
@@ -26,7 +26,7 @@ import datastore
 
 from .routes import routes
 
-EMBEDDING_MODEL_NAME = "textembedding-gecko@001"
+EMBEDDING_MODEL_NAME = "text-embedding-004"
 
 
 class AppConfig(BaseModel):
@@ -36,7 +36,7 @@ class AppConfig(BaseModel):
     clientId: Optional[str] = None
 
 
-def parse_config() -> AppConfig:
+def parse_config(path: str) -> AppConfig:
     config = {}
     config["host"] = os.environ.get("APP_HOST", "127.0.0.1")
     config["port"] = os.environ.get("APP_PORT", 8080)
@@ -48,6 +48,7 @@ def parse_config() -> AppConfig:
     config["datastore"]["database"] = os.environ.get("DB_NAME", "assistantdemo")
     config["datastore"]["user"] = os.environ.get("DB_USER", "postgres")
     config["datastore"]["password"] = os.environ.get("DB_PASSWORD", "password")
+
     return AppConfig(**config)
 
 
