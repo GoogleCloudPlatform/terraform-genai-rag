@@ -44,6 +44,6 @@ terraform {
   required_version = ">= 0.13"
 
   provider_meta "google" {
-    module_name = "blueprints/terraform/terraform-genai-rag/v0.1.2"
+    module_name = "blueprints/terraform/terraform-genai-rag/v0.2.1"
   }
 }

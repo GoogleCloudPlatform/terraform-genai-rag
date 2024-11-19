@@ -30,6 +30,7 @@ module "project-services" {
     "cloudbuild.googleapis.com",
     "compute.googleapis.com",
     "config.googleapis.com",
+    "dns.googleapis.com",
     "iam.googleapis.com",
     "run.googleapis.com",
     "secretmanager.googleapis.com",

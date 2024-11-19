@@ -51,13 +51,13 @@ variable "deletion_protection" {
 variable "frontend_container" {
   type        = string
   description = "The public Artifact Registry URI for the frontend container"
-  default     = "us-central1-docker.pkg.dev/analytics-use-case-3-2/cloud-run-source-deploy/frontend-service" # "us-docker.pkg.dev/google-samples/containers/jss/rag-frontend-service:v0.0.1"
+  default     = "us-docker.pkg.dev/google-samples/containers/jss/rag-frontend-service:v0.0.2" # "us-central1-docker.pkg.dev/analytics-use-case-3-2/cloud-run-source-deploy/frontend-service"
 }
 
 variable "retrieval_container" {
   type        = string
   description = "The public Artifact Registry URI for the retrieval container"
-  default     = "us-central1-docker.pkg.dev/analytics-use-case-3-2/cloud-run-source-deploy/retrieval-service" # "us-docker.pkg.dev/google-samples/containers/jss/rag-retrieval-service:v0.0.2"
+  default     = "us-docker.pkg.dev/google-samples/containers/jss/rag-retrieval-service:v0.0.3" # "us-central1-docker.pkg.dev/analytics-use-case-3-2/cloud-run-source-deploy/retrieval-service"
 }
 
 variable "database_type" {
