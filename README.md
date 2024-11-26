@@ -21,3 +21,5 @@
 | deployment\_ip\_address | Web URL link |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+
+Note: The file that was previously linked is inaccessible.
