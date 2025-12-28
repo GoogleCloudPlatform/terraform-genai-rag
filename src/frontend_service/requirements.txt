@@ -8,7 +8,7 @@ langchain==0.2.11
 langchain-google-vertexai==1.0.7
 markdown==3.5.2
 types-Markdown==3.5.0.20240129
-uvicorn[standard]==0.27.0.post1
+uvicorn[standard]==0.40.0
 python-multipart==0.0.7
 pytz==2024.2
 types-pytz==2024.1.0.20240417
