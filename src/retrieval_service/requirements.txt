@@ -1,5 +1,5 @@
 asyncpg==0.30.0
-fastapi==0.115.3
+fastapi==0.128.0
 google-cloud-firestore==2.19.0
 google-cloud-aiplatform==1.70.0
 langchain==0.3.4
