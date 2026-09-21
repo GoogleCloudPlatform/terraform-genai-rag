@@ -6,7 +6,7 @@ jinja2==3.1.4
 langchain-community==0.2.19
 langchain==0.2.11
 langchain-google-vertexai==1.0.7
-markdown==3.5.2
+markdown==3.8.1
 types-Markdown==3.5.0.20240129
 uvicorn[standard]==0.27.0.post1
 python-multipart==0.0.7
